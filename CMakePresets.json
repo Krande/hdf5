@@ -29,7 +29,7 @@
         "PREFIX": "C:/work/mambaforge/envs/gnu"
       },
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library:$env{PREFIX}/Library/mingw-w64/lib:$env{PREFIX}/Library/mingw-w64/include:$env{PREFIX}/Library/mingw-w64/bin:$env{PREFIX}/Library/lib:$env{PREFIX}/Library/include",
+        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library",
         "LD_LIBRARY_PATH": "$env{PREFIX}/Library/mingw-w64/lib:$env{PREFIX}/Library/lib",
         "CMAKE_C_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gcc.exe",
         "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/g++",
@@ -46,6 +46,8 @@
       },
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library:$env{PREFIX}/Library/bin:$env{PREFIX}/Library/lib:$env{PREFIX}/Library/include",
+        "CMAKE_C_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
         "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang.exe"
       }
     }
