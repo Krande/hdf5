@@ -21,10 +21,10 @@ set THIS_DIR=%~dp0
 for /f "tokens=*" %%i in (%THIS_DIR%.env) do set %%i
 
 set LIBRARY_PREFIX=%PREFIX%/Library
-set CMAKE_PREFIX_PATH=%PREFIX%;%LIBRARY_PREFIX%/include;%LIBRARY_PREFIX%/lib;%LIBRARY_PREFIX%/bin
+set CMAKE_PREFIX_PATH=%PREFIX%;%LIBRARY_PREFIX%/include;%LIBRARY_PREFIX%/lib;%PREFIX%/Library/mingw-w64/bin;%LIBRARY_PREFIX%/bin;
 
-set CMAKE_FORTRAN_COMPILER=%PREFIX%/Library/bin/flang.exe
-::set CMAKE_FORTRAN_COMPILER=%PREFIX%/Library/mingw-w64/bin/gfortran.exe
+::set CMAKE_FORTRAN_COMPILER=%PREFIX%/Library/bin/flang.exe
+set CMAKE_Fortran_COMPILER=gfortran.exe
 ::set CMAKE_Fortran_PREPROCESS_SOURCE=ON
 ::set FC=%CMAKE_FORTRAN_COMPILER%
 set HDF5_BUILD_FORTRAN=ON
