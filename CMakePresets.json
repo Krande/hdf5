@@ -17,7 +17,9 @@
         "HDF5_BUILD_HL_LIB": "ON",
         "HDF5_BUILD_TOOLS": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
-        "ALLOW_UNSUPPORTED": "ON"
+        "ALLOW_UNSUPPORTED": "ON",
+        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library",
+        "CMAKE_INSTALL_PREFIX": "$env{PREFIX}/Library"
       }
     },
     {
@@ -26,29 +28,59 @@
       "inherits": "fortran-conda-shared",
       "hidden": false,
       "environment": {
-        "PREFIX": "C:/work/mambaforge/envs/gnu"
+        "PREFIX": "C:/work/mambaforge/envs/gnu",
+        "PATH": "$env{PREFIX}/Library/mingw-w64/bin"
       },
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library",
-        "LD_LIBRARY_PATH": "$env{PREFIX}/Library/mingw-w64/lib:$env{PREFIX}/Library/lib",
         "CMAKE_C_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gcc.exe",
-        "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/g++",
+        "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/g++.exe",
         "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gfortran.exe"
       }
     },
     {
       "name": "fortran-conda-flang",
+      "generator": "Ninja",
+      "inherits": "fortran-conda-shared",
+      "hidden": false,
+      "environment": {
+        "PREFIX": "C:/work/mambaforge/envs/cflang",
+        "PATH": "$env{PREFIX}/Library/bin"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER_ID": "Clang",
+        "CMAKE_CXX_COMPILER_ID": "Clang",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+        "CMAKE_Fortran_FLAGS": "-fdefault-integer-8",
+        "CMAKE_C_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
+        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang-new.exe"
+      }
+    },
+    {
+      "name": "fortran-msvc-flang",
       "generator": "Ninja Multi-Config",
       "inherits": "fortran-conda-shared",
       "hidden": false,
       "environment": {
-        "PREFIX": "C:/work/mambaforge/envs/cflang"
+        "PREFIX": "C:/work/mambaforge/envs/msvcflang",
+        "LDFLAGS": "-fuse-ld=lld-link"
       },
       "cacheVariables": {
-        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library:$env{PREFIX}/Library/bin:$env{PREFIX}/Library/lib:$env{PREFIX}/Library/include",
-        "CMAKE_C_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
-        "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
-        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang.exe"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+        "CMAKE_LINKER": "$env{PREFIX}/Library/bin/lld-link.exe",
+        "CMAKE_EXE_LINKER_FLAGS": "-fuse-ld=lld-link",
+        "CMAKE_C_FLAGS": "TRUE",
+        "CMAKE_CXX_FLAGS": "TRUE",
+        "CMAKE_C_COMPILER": "cl.exe",
+        "CMAKE_CXX_COMPILER": "cl.exe",
+        "PATH": "$env{PREFIX}/Library/bin",
+        "CMAKE_Fortran_FLAGS": "-fdefault-integer-8",
+        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang-new.exe"
+      },
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio"
+        }
       }
     }
   ]
