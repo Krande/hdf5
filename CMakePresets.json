@@ -8,33 +8,35 @@
       "hidden": true,
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "HDF5_BUILD_DOC": "OFF",
         "HDF5_BUILD_FORTRAN": "ON",
         "HDF5_BUILD_CPP_LIB": "ON",
         "BUILD_SHARED_LIBS": "ON",
         "BUILD_STATIC_LIBS": "OFF",
         "ONLY_SHARED_LIBS": "ON",
-        "HDF5_BUILD_HL_LIB": "ON",
-        "HDF5_BUILD_TOOLS": "ON",
-        "HDF5_ENABLE_THREADSAFE": "ON",
+        "BUILD_TESTING": "ON",
+        "HDF5_ENABLE_THREADSAFE": "OFF",
         "ALLOW_UNSUPPORTED": "ON",
-        "CMAKE_PREFIX_PATH": "$env{PREFIX}/Library",
-        "CMAKE_INSTALL_PREFIX": "$env{PREFIX}/Library"
+        "HDF5_BUILD_DOC": "OFF"
       }
     },
     {
       "name": "fortran-conda-gcc-gfortran",
-      "generator": "Ninja Multi-Config",
+      "generator": "Ninja",
       "inherits": "fortran-conda-shared",
       "hidden": false,
       "environment": {
-        "PREFIX": "C:/work/mambaforge/envs/gnu",
-        "PATH": "$env{PREFIX}/Library/mingw-w64/bin"
+        "PREFIX": "C:/work/mambaforge/envs/gnuc",
+        "PATH": "$env{PREFIX}/Library/mingw-w64/bin;$env{PREFIX}/Library/bin"
       },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gcc.exe",
         "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/g++.exe",
-        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gfortran.exe"
+        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/gfortran.exe",
+        "CMAKE_Fortran_FLAGS": "-fdefault-integer-8",
+        "CMAKE_RC_COMPILER": "$env{PREFIX}/Library/mingw-w64/bin/windres.exe",
+        "CMAKE_CXX_FLAGS": "-nostartfiles $env{CMAKE_CXX_FLAGS} -Dsocklen_t=int",
+        "CMAKE_C_FLAGS": "-nostartfiles $env{CMAKE_C_FLAGS} -Dsocklen_t=int",
+        "CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS": "ON"
       }
     },
     {
@@ -46,14 +48,19 @@
         "PREFIX": "C:/work/mambaforge/envs/cflang",
         "PATH": "$env{PREFIX}/Library/bin"
       },
+      "cmakeExecutable": "$env{PREFIX}/Library/bin/cmake.exe",
       "cacheVariables": {
+        "CMAKE_LINKER": "$env{PREFIX}/Library/bin/lld-link.exe",
         "CMAKE_C_COMPILER_ID": "Clang",
+        "CMAKE_COMPILER_VENDOR": "clang",
         "CMAKE_CXX_COMPILER_ID": "Clang",
+        "CMAKE_Fortran_COMPILER_ID": "LLVMFlang",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-        "CMAKE_Fortran_FLAGS": "-fdefault-integer-8",
         "CMAKE_C_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
         "CMAKE_CXX_COMPILER": "$env{PREFIX}/Library/bin/clang-cl.exe",
-        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang-new.exe"
+        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/Library/bin/flang-new.exe",
+        "CMAKE_CXX_FLAGS": "-Doff64_t=off_t $env{CMAKE_CXX_FLAGS}",
+        "CMAKE_C_FLAGS": "-Doff64_t=off_t $env{CMAKE_C_FLAGS}"
       }
     },
     {
