@@ -40,6 +40,22 @@
       }
     },
     {
+      "name": "mingw-clion",
+      "description": "Using downloaded variants https://github.com/niXman/mingw-builds-binaries/releases",
+      "generator": "Ninja",
+      "inherits": "fortran-conda-shared",
+      "hidden": false,
+      "environment": {
+        "PREFIX": "C:/mingw64",
+        "PATH": "$env{PREFIX}/bin;$env{PREFIX};C:\\Users\\Kristoffer\\AppData\\Local\\Programs\\CLion\\bin\\ninja\\win\\x64"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "$env{PREFIX}/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "$env{PREFIX}/bin/g++.exe",
+        "CMAKE_Fortran_COMPILER": "$env{PREFIX}/bin/gfortran.exe"
+      }
+    },
+    {
       "name": "fortran-conda-flang",
       "generator": "Ninja",
       "inherits": "fortran-conda-shared",
