@@ -56,6 +56,38 @@
       }
     },
     {
+      "name": "ci-StdShar-MSVC-Fortran",
+      "description": "MSVC Standard Config for x64 (Release)",
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio (intel)"
+        }
+      },
+      "environment": {
+        "PREFIX": "C:/work/mambaforge/envs/libmed-base"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "PATH": "$env{PREFIX}/Library/bin;$env{PATH}",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "CMAKE_Fortran_COMPILER": "ifx",
+        "HDF5_BUILD_FORTRAN": "ON"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
       "name": "fortran-conda-flang",
       "generator": "Ninja",
       "inherits": "fortran-conda-shared",
