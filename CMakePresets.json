@@ -14,7 +14,7 @@
         "BUILD_STATIC_LIBS": "OFF",
         "ONLY_SHARED_LIBS": "ON",
         "BUILD_TESTING": "ON",
-        "HDF5_ENABLE_THREADSAFE": "OFF",
+        "HDF5_ENABLE_THREADSAFE": "ON",
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_BUILD_DOC": "OFF"
       }
@@ -46,7 +46,7 @@
       "inherits": "fortran-conda-shared",
       "hidden": false,
       "environment": {
-        "PREFIX": "C:/mingw64",
+        "PREFIX": "C:/compilers/mingw64",
         "PATH": "$env{PREFIX}/bin;$env{PREFIX};C:\\Users\\Kristoffer\\AppData\\Local\\Programs\\CLion\\bin\\ninja\\win\\x64"
       },
       "cacheVariables": {
