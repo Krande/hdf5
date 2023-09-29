@@ -4,6 +4,20 @@
   ],
   "configurePresets": [
     {
+      "name": "intel-vs2022",
+      "generator": "Ninja",
+      "inherits": "fortran-conda-shared",
+      "hidden": false,
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio (intel)"
+        }
+      },
+      "environment": {
+        "TEST": "$env{FC}"
+      }
+    },
+    {
       "name": "fortran-conda-shared",
       "hidden": true,
       "cacheVariables": {
@@ -14,7 +28,7 @@
         "BUILD_STATIC_LIBS": "OFF",
         "ONLY_SHARED_LIBS": "ON",
         "BUILD_TESTING": "ON",
-        "HDF5_ENABLE_THREADSAFE": "ON",
+        "HDF5_ENABLE_THREADSAFE": "OFF",
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_BUILD_DOC": "OFF"
       }
