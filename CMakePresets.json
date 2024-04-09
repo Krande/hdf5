@@ -133,6 +133,7 @@
         "ci-StdShar",
         "ci-Fortran"
       ],
+      "binaryDir": "${sourceDir}/build-flang",
       "environment": {
         "CC": "clang-cl",
         "CXX": "clang-cl",
