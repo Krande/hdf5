@@ -125,6 +125,26 @@
       ]
     },
     {
+      "name": "ci-StdShar-MSVC-Flang",
+      "description": "MSVC Standard Config for x64 (Release)",
+      "inherits": [
+        "ci-x64-Release-MSVC",
+        "ci-CPP",
+        "ci-StdShar",
+        "ci-Fortran"
+      ],
+      "environment": {
+        "CC": "clang-cl",
+        "CXX": "clang-cl",
+        "FC": "flang-new"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_Fortran_COMPILER": "flang-new"
+      }
+    },
+    {
       "name": "ci-StdShar-MSVC-Fortran",
       "description": "MSVC Standard Config for x64 (Release)",
       "inherits": [
