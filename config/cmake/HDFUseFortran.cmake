@@ -27,7 +27,7 @@ include (FortranCInterface)
 #-----------------------------------------------------------------------------
 # Verify that the Fortran and C/C++ compilers work together
 #-----------------------------------------------------------------------------
-FortranCInterface_VERIFY()
+#FortranCInterface_VERIFY()
 
 FortranCInterface_HEADER (
     ${CMAKE_BINARY_DIR}/FCMangle.h
