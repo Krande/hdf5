@@ -247,15 +247,9 @@
       ]
     },
     {
-      "name": "ci-StdShar-MSVC-Flang",
+      "name": "ci-MSVC-Flang",
       "description": "MSVC Flang Config for x64 (Release)",
-      "inherits": [
-        "ci-x64-Release-MSVC",
-        "ci-CPP",
-        "ci-StdShar",
-        "ci-Fortran"
-      ],
-      "binaryDir": "${sourceDir}/build-flang",
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "vendor": {
         "jetbrains.com/clion": {
           "toolchain": "Visual Studio (MSVC) with Flang"
@@ -263,13 +257,26 @@
       },
       "environment": {
         "LD_LIBRARY_PATH": "$penv{LD_LIBRARY_PATH};$env{PREFIX}/Library/lib",
+        "LIBRARY_PREFIX": "$env{PREFIX}/Library",
         "PATH": "$penv{PATH};$env{PREFIX}/Library/bin"
       },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl",
         "CMAKE_CXX_COMPILER": "clang-cl",
         "CMAKE_Fortran_COMPILER": "flang-new",
-        "CMAKE_Fortran_FLAGS": "-ffree-form -fdefault-real-8 -fdefault-integer-8 -fdefault-double-8"
+        "CMAKE_Fortran_FLAGS": "-ffree-form -fdefault-real-8 -fdefault-integer-8 -fdefault-double-8 -nomp",
+        "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
+        "BUILD_SHARED_LIBS": "ON",
+        "BUILD_STATIC_LIBS": "OFF",
+        "ONLY_SHARED_LIBS": "ON",
+        "HDF5_BUILD_HL_LIB": "ON",
+        "HDF5_BUILD_CPP_LIB": "ON",
+        "HDF5_BUILD_FORTRAN": "ON",
+        "ALLOW_UNSUPPORTED": "ON",
+        "HDF5_ENABLE_THREADSAFE": "ON",
+        "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
+        "ZLIB_USE_EXTERNAL": "ON",
+        "ZLIB_INCLUDE_DIRS": "$env{LIBRARY_PREFIX}/include"
       }
     },
     {
@@ -282,12 +289,14 @@
         }
       },
       "environment": {
-        "LD_LIBRARY_PATH": "$penv{LD_LIBRARY_PATH};$env{PREFIX}/Library/lib"
+        "LD_LIBRARY_PATH": "$penv{LD_LIBRARY_PATH};$env{PREFIX}/Library/lib",
+        "PATH": "$penv{PATH};$env{PREFIX}/Library/bin",
+        "FC": "ifx.exe"
       },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl",
-        "CMAKE_Fortran_COMPILER": "ifx",
+        "CMAKE_Fortran_COMPILER": "ifx.exe",
         "CMAKE_Fortran_FLAGS": "",
         "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
         "BUILD_SHARED_LIBS": "ON",
@@ -299,7 +308,8 @@
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
         "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
-        "ZLIB_USE_EXTERNAL": "ON"
+        "ZLIB_USE_EXTERNAL": "ON",
+        "ZLIB_INCLUDE_DIRS": "$env{LIBRARY_PREFIX}/include"
       }
     },
     {
