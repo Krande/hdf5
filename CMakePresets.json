@@ -247,36 +247,48 @@
       ]
     },
     {
-      "name": "ci-MSVC-Flang",
-      "description": "MSVC Flang Config for x64 (Release)",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "vendor": {
-        "jetbrains.com/clion": {
-          "toolchain": "Visual Studio (MSVC) with Flang"
-        }
-      },
-      "environment": {
-        "LD_LIBRARY_PATH": "$penv{LD_LIBRARY_PATH};$env{PREFIX}/Library/lib",
-        "LIBRARY_PREFIX": "$env{PREFIX}/Library",
-        "PATH": "$penv{PATH};$env{PREFIX}/Library/bin"
-      },
+      "name": "ci-conda-shared",
+      "hidden": true,
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-cl",
-        "CMAKE_CXX_COMPILER": "clang-cl",
-        "CMAKE_Fortran_COMPILER": "flang-new",
-        "CMAKE_Fortran_FLAGS": "-ffree-form -fdefault-real-8 -fdefault-integer-8 -fdefault-double-8 -nomp",
         "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
         "BUILD_SHARED_LIBS": "ON",
         "BUILD_STATIC_LIBS": "OFF",
         "ONLY_SHARED_LIBS": "ON",
+        "HDF5_BUILD_TOOLS": "ON",
         "HDF5_BUILD_HL_LIB": "ON",
         "HDF5_BUILD_CPP_LIB": "ON",
         "HDF5_BUILD_FORTRAN": "ON",
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
         "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
-        "ZLIB_USE_EXTERNAL": "ON",
-        "ZLIB_INCLUDE_DIRS": "$env{LIBRARY_PREFIX}/include"
+        "ZLIB_USE_EXTERNAL": "OFF",
+        "CMAKE_FIND_ROOT_PATH_MODE_PROGRAM": "NEVER",
+        "CMAKE_FIND_ROOT_PATH_MODE_LIBRARY": "ONLY",
+        "CMAKE_FIND_ROOT_PATH_MODE_INCLUDE": "ONLY",
+        "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
+        "CPATH": "$env{PREFIX}/include;$env{PREFIX}/Library/include",
+        "LIB": "$penv{LIB};$env{PREFIX}/lib;$env{PREFIX}/Library/lib"
+      }
+    },
+    {
+      "name": "ci-MSVC-Flang",
+      "description": "MSVC Flang Config for x64 (Release)",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "inherits": [
+        "ci-conda-shared"
+      ],
+      "vendor": {
+        "jetbrains.com/clion": {
+          "toolchain": "Visual Studio (MSVC) with Flang"
+        }
+      },
+      "environment": {
+        "FC": "flang-new"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_Fortran_COMPILER": "$env{LIBRARY_PREFIX}/bin/flang-new.exe"
       }
     },
     {
@@ -290,26 +302,14 @@
       },
       "environment": {
         "LD_LIBRARY_PATH": "$penv{LD_LIBRARY_PATH};$env{PREFIX}/Library/lib",
-        "PATH": "$penv{PATH};$env{PREFIX}/Library/bin",
+        "PATH": "$env{PREFIX}/Library/bin;$penv{PATH}",
         "FC": "ifx.exe"
       },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_Fortran_COMPILER": "ifx.exe",
-        "CMAKE_Fortran_FLAGS": "",
-        "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
-        "BUILD_SHARED_LIBS": "ON",
-        "BUILD_STATIC_LIBS": "OFF",
-        "ONLY_SHARED_LIBS": "ON",
-        "HDF5_BUILD_HL_LIB": "ON",
-        "HDF5_BUILD_CPP_LIB": "ON",
-        "HDF5_BUILD_FORTRAN": "ON",
-        "ALLOW_UNSUPPORTED": "ON",
-        "HDF5_ENABLE_THREADSAFE": "ON",
-        "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
-        "ZLIB_USE_EXTERNAL": "ON",
-        "ZLIB_INCLUDE_DIRS": "$env{LIBRARY_PREFIX}/include"
+        "CMAKE_Fortran_COMPILER_ID": "IntelLLVM"
       }
     },
     {
