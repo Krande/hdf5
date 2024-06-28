@@ -22,7 +22,7 @@ AC_PREREQ([2.71])
 ## NOTE: Do not forget to change the version number here when we do a
 ## release!!!
 ##
-AC_INIT([HDF5], [1.14.4-2], [help@hdfgroup.org])
+AC_INIT([HDF5], [1.14.4-3], [help@hdfgroup.org])
 
 AC_CONFIG_SRCDIR([src/H5.c])
 AC_CONFIG_HEADERS([src/H5config.h])
@@ -4634,6 +4634,13 @@ if test "X$HDF_FORTRAN" = "Xyes"; then
       ;;
   esac
 fi
+
+## HDF5 configure code created by autotools with gcc 4.9.2 is adding problematic
+## linker flags:  -l with no library name; -l <libname>, specifically gfortran or m.
+## This sed script corrects "-l <libname>" first and then "-l " with no library name.
+## If the order is not preserved, all instances of "-l " will be removed.
+sed -e '/^postdeps/ s/-l \([a-zA-Z]\)/-l\1/g' -e '/^postdeps/ s/-l //g' libtool > libtool.bak
+mv -- libtool.bak libtool
 
 ## show the configure settings
 cat src/libhdf5.settings
