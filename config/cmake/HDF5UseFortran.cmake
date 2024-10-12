@@ -46,7 +46,7 @@ macro (FORTRAN_RUN FUNCTION_NAME SOURCE_CODE RUN_RESULT_VAR1 COMPILE_RESULT_VAR1
     TRY_RUN (RUN_RESULT_VAR COMPILE_RESULT_VAR
         ${CMAKE_BINARY_DIR}
         ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/testFortranCompiler1.f90
-        CMAKE_FLAGS "${TMP_CMAKE_Fortran_FLAGS}"
+        CMAKE_FLAGS "${TMP_CMAKE_Fortran_FLAGS} -D_CRT_SECURE_NO_WARNINGS -D_MT -D_DLL --target=x86_64-pc-windows-msvc --target=x86_64-pc-windows-msvc -fms-runtime-lib=dll -fuse-ld=lld -Wl,-defaultlib:$ENV{PREFIX}/Library/lib/clang/19/lib/windows/clang_rt.builtins-x86_64.lib"
         LINK_LIBRARIES "${HDF5_REQUIRED_LIBRARIES}"
         ${_RUN_OUTPUT_VARIABLE} OUTPUT_VAR
     )
