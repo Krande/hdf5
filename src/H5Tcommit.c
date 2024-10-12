@@ -59,6 +59,7 @@ static herr_t H5T__commit_api_common(hid_t loc_id, const char *name, hid_t type_
 static hid_t  H5T__open_api_common(hid_t loc_id, const char *name, hid_t tapl_id, void **token_ptr,
                                    H5VL_object_t **_vol_obj_ptr);
 static H5T_t *H5T__open_oid(const H5G_loc_t *loc);
+static herr_t H5T_destruct_datatype(void *datatype, H5VL_t *vol_connector);
 
 /*********************/
 /* Public Variables */
@@ -167,7 +168,6 @@ H5Tcommit2(hid_t loc_id, const char *name, hid_t type_id, hid_t lcpl_id, hid_t t
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE6("e", "i*siiii", loc_id, name, type_id, lcpl_id, tcpl_id, tapl_id);
 
     /* Commit the dataset synchronously */
     if ((ret_value = H5T__commit_api_common(loc_id, name, type_id, lcpl_id, tcpl_id, tapl_id, NULL, NULL)) <
@@ -197,8 +197,6 @@ H5Tcommit_async(const char *app_file, const char *app_func, unsigned app_line, h
     herr_t         ret_value = SUCCEED;         /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE10("e", "*s*sIui*siiiii", app_file, app_func, app_line, loc_id, name, type_id, lcpl_id, tcpl_id,
-              tapl_id, es_id);
 
     /* Set up request token pointer for asynchronous operation */
     if (H5ES_NONE != es_id)
@@ -324,7 +322,6 @@ H5Tcommit_anon(hid_t loc_id, hid_t type_id, hid_t tcpl_id, hid_t tapl_id)
     herr_t            ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE4("e", "iiii", loc_id, type_id, tcpl_id, tapl_id);
 
     /* Check arguments */
     if (NULL == (type = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -352,7 +349,7 @@ H5Tcommit_anon(hid_t loc_id, hid_t type_id, hid_t tcpl_id, hid_t tapl_id)
     loc_params.obj_type = H5I_get_type(loc_id);
 
     /* Get the file object */
-    if (NULL == (vol_obj = (H5VL_object_t *)H5I_object(loc_id)))
+    if (NULL == (vol_obj = H5VL_vol_object(loc_id)))
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, FAIL, "invalid file identifier");
 
     /* Commit the datatype */
@@ -579,7 +576,6 @@ H5Tcommitted(hid_t type_id)
     htri_t ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("t", "i", type_id);
 
     /* Check arguments */
     if (NULL == (type = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -667,7 +663,7 @@ H5T__open_api_common(hid_t loc_id, const char *name, hid_t tapl_id, void **token
 done:
     /* Cleanup on error */
     if (H5I_INVALID_HID == ret_value)
-        if (dt && H5VL_datatype_close(*vol_obj_ptr, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        if (dt && H5T_destruct_datatype(dt, (*vol_obj_ptr)->connector) < 0)
             HDONE_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, H5I_INVALID_HID, "unable to release datatype");
 
     FUNC_LEAVE_NOAPI(ret_value)
@@ -691,7 +687,6 @@ H5Topen2(hid_t loc_id, const char *name, hid_t tapl_id)
     hid_t ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
-    H5TRACE3("i", "i*si", loc_id, name, tapl_id);
 
     /* Open the datatype synchronously */
     if ((ret_value = H5T__open_api_common(loc_id, name, tapl_id, NULL, NULL)) < 0)
@@ -722,7 +717,6 @@ H5Topen_async(const char *app_file, const char *app_func, unsigned app_line, hid
     hid_t          ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
-    H5TRACE7("i", "*s*sIui*sii", app_file, app_func, app_line, loc_id, name, tapl_id, es_id);
 
     /* Set up request token pointer for asynchronous operation */
     if (H5ES_NONE != es_id)
@@ -773,7 +767,6 @@ H5Tget_create_plist(hid_t dtype_id)
     hid_t  ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
-    H5TRACE1("i", "i", dtype_id);
 
     /* Check arguments */
     if (NULL == (type = (H5T_t *)H5I_object_verify(dtype_id, H5I_DATATYPE)))
@@ -833,7 +826,6 @@ H5Tflush(hid_t type_id)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -877,7 +869,6 @@ H5Trefresh(hid_t type_id)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -1046,9 +1037,6 @@ H5T_open(const H5G_loc_t *loc)
 
     /* Check if datatype was already open */
     if (NULL == (shared_fo = (H5T_shared_t *)H5FO_opened(loc->oloc->file, loc->oloc->addr))) {
-        /* Clear any errors from H5FO_opened() */
-        H5E_clear_stack(NULL);
-
         /* Open the datatype object */
         if (NULL == (dt = H5T__open_oid(loc)))
             HGOTO_ERROR(H5E_DATATYPE, H5E_NOTFOUND, NULL, "not found");
@@ -1272,6 +1260,41 @@ done:
 
     FUNC_LEAVE_NOAPI(ret_value)
 } /* end H5T_construct_datatype() */
+
+/*-------------------------------------------------------------------------
+ * Function:    H5T_destruct_datatype
+ *
+ * Purpose:     Helper function to free a committed datatype object that
+ *              hasn't yet been wrapped within a VOL object. This usually
+ *              happens when a failure occurs during opening a committed
+ *              datatype. When this happens, the datatype must be wrapped
+ *              inside a temporary VOL object in order to route the close
+ *              operation through the stack of VOL connectors.
+ *
+ * Return:      Non-negative on success/Negative on failure
+ *
+ *-------------------------------------------------------------------------
+ */
+static herr_t
+H5T_destruct_datatype(void *datatype, H5VL_t *vol_connector)
+{
+    H5VL_object_t *vol_obj   = NULL;
+    herr_t         ret_value = FAIL;
+
+    FUNC_ENTER_NOAPI(FAIL)
+
+    if (NULL == (vol_obj = H5VL_create_object(datatype, vol_connector)))
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CANTALLOC, FAIL, "can't create VOL object for committed datatype");
+
+    if (H5VL_datatype_close(vol_obj, H5P_DATASET_XFER_DEFAULT, H5_REQUEST_NULL) < 0)
+        HGOTO_ERROR(H5E_DATATYPE, H5E_CLOSEERROR, FAIL, "unable to release datatype");
+
+done:
+    if (vol_obj && H5VL_free_object(vol_obj) < 0)
+        HDONE_ERROR(H5E_DATATYPE, H5E_CANTFREE, FAIL, "can't free VOL object");
+
+    FUNC_LEAVE_NOAPI(ret_value)
+} /* end H5T_destruct_datatype() */
 
 /*-------------------------------------------------------------------------
  * Function:    H5T_get_named_type

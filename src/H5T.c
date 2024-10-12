@@ -43,6 +43,17 @@
 #include "H5VLprivate.h" /* Virtual Object Layer                     */
 #include "H5VMprivate.h" /* Vectors and arrays                       */
 
+/* Datatype conversion functions */
+#include "H5Tconv_integer.h"
+#include "H5Tconv_float.h"
+#include "H5Tconv_string.h"
+#include "H5Tconv_bitfield.h"
+#include "H5Tconv_compound.h"
+#include "H5Tconv_reference.h"
+#include "H5Tconv_enum.h"
+#include "H5Tconv_vlen.h"
+#include "H5Tconv_array.h"
+
 /****************/
 /* Local Macros */
 /****************/
@@ -1908,7 +1919,6 @@ H5Tcreate(H5T_class_t type, size_t size)
     hid_t  ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("i", "Ttz", type, size);
 
     /* check args. We support string (fixed-size or variable-length) now. */
     if (size <= 0 && size != H5T_VARIABLE)
@@ -1953,7 +1963,6 @@ H5Tcopy(hid_t obj_id)
     hid_t  ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
-    H5TRACE1("i", "i", obj_id);
 
     switch (H5I_get_type(obj_id)) {
         case H5I_DATATYPE:
@@ -2048,7 +2057,6 @@ H5Tclose(hid_t type_id)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2084,7 +2092,6 @@ H5Tclose_async(const char *app_file, const char *app_func, unsigned app_line, hi
     herr_t         ret_value = SUCCEED;         /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE5("e", "*s*sIuii", app_file, app_func, app_line, type_id, es_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2143,7 +2150,6 @@ H5Tequal(hid_t type1_id, hid_t type2_id)
     htri_t       ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("t", "ii", type1_id, type2_id);
 
     /* check args */
     if (NULL == (dt1 = (H5T_t *)H5I_object_verify(type1_id, H5I_DATATYPE)))
@@ -2179,7 +2185,6 @@ H5Tlock(hid_t type_id)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2212,7 +2217,6 @@ H5Tget_class(hid_t type_id)
     H5T_class_t ret_value; /* Return value */
 
     FUNC_ENTER_API(H5T_NO_CLASS)
-    H5TRACE1("Tt", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2276,7 +2280,6 @@ H5Tdetect_class(hid_t type, H5T_class_t cls)
     htri_t ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("t", "iTt", type, cls);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type, H5I_DATATYPE)))
@@ -2381,7 +2384,6 @@ H5Tis_variable_str(hid_t dtype_id)
     htri_t ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("t", "i", dtype_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(dtype_id, H5I_DATATYPE)))
@@ -2432,7 +2434,6 @@ H5Tget_size(hid_t type_id)
     size_t ret_value; /* Return value */
 
     FUNC_ENTER_API(0)
-    H5TRACE1("z", "i", type_id);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2473,7 +2474,6 @@ H5Tset_size(hid_t type_id, size_t size)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("e", "iz", type_id, size);
 
     /* Check args */
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type_id, H5I_DATATYPE)))
@@ -2517,7 +2517,6 @@ H5Tget_super(hid_t type)
     hid_t  ret_value = H5I_INVALID_HID; /* Return value */
 
     FUNC_ENTER_API(H5I_INVALID_HID)
-    H5TRACE1("i", "i", type);
 
     if (NULL == (dt = (H5T_t *)H5I_object_verify(type, H5I_DATATYPE)))
         HGOTO_ERROR(H5E_ARGS, H5E_BADTYPE, H5I_INVALID_HID, "not a datatype");
@@ -2725,14 +2724,14 @@ H5T__register(H5T_pers_t pers, const char *name, H5T_t *src, H5T_t *dst, H5T_con
                                     "unable to decrement reference count on temporary ID");
                     tmp_sid = tmp_did = H5I_INVALID_HID;
                     tmp_stype = tmp_dtype = NULL;
-                    if (H5E_clear_stack(NULL) < 0)
+                    if (H5E_clear_stack() < 0)
                         HGOTO_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
                     continue;
                 } /* end if */
             }     /* end if */
             else if ((conv->u.lib_func)(old_path->src, old_path->dst, &cdata, &conv_ctx, 0, 0, 0, NULL,
                                         NULL) < 0) {
-                if (H5E_clear_stack(NULL) < 0)
+                if (H5E_clear_stack() < 0)
                     HGOTO_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
                 continue;
             } /* end if */
@@ -2774,7 +2773,7 @@ H5T__register(H5T_pers_t pers, const char *name, H5T_t *src, H5T_t *dst, H5T_con
             }
 
             /* We don't care about any failures during the freeing process */
-            if (H5E_clear_stack(NULL) < 0)
+            if (H5E_clear_stack() < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
         } /* end for */
     }     /* end else */
@@ -2835,7 +2834,6 @@ H5Tregister(H5T_pers_t pers, const char *name, hid_t src_id, hid_t dst_id, H5T_c
     herr_t          ret_value = SUCCEED; /*return value                   */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE5("e", "Te*siiTC", pers, name, src_id, dst_id, func);
 
     /* Check args */
     if (H5T_PERS_HARD != pers && H5T_PERS_SOFT != pers)
@@ -2975,7 +2973,6 @@ H5Tunregister(H5T_pers_t pers, const char *name, hid_t src_id, hid_t dst_id, H5T
     herr_t ret_value = SUCCEED;     /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE5("e", "Te*siiTC", pers, name, src_id, dst_id, func);
 
     /* Check arguments */
     if (src_id > 0 && (NULL == (src = (H5T_t *)H5I_object_verify(src_id, H5I_DATATYPE))))
@@ -3013,7 +3010,6 @@ H5Tfind(hid_t src_id, hid_t dst_id, H5T_cdata_t **pcdata /*out*/)
     H5T_conv_t  ret_value; /* Return value */
 
     FUNC_ENTER_API(NULL)
-    H5TRACE3("TC", "ii**!", src_id, dst_id, pcdata);
 
     /* Check args */
     if (NULL == (src = (H5T_t *)H5I_object_verify(src_id, H5I_DATATYPE)) ||
@@ -3057,7 +3053,6 @@ H5Tcompiler_conv(hid_t src_id, hid_t dst_id)
     htri_t ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("t", "ii", src_id, dst_id);
 
     /* Check args */
     if (NULL == (src = (H5T_t *)H5I_object_verify(src_id, H5I_DATATYPE)) ||
@@ -3100,7 +3095,6 @@ H5Tconvert(hid_t src_id, hid_t dst_id, size_t nelmts, void *buf, void *backgroun
     herr_t      ret_value = SUCCEED; /* Return value            */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE6("e", "iiz*x*xi", src_id, dst_id, nelmts, buf, background, dxpl_id);
 
     /* Check args */
     if (NULL == (src = (H5T_t *)H5I_object_verify(src_id, H5I_DATATYPE)) ||
@@ -3145,7 +3139,6 @@ H5Treclaim(hid_t type_id, hid_t space_id, hid_t dxpl_id, void *buf)
     herr_t       ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE4("e", "iii*x", type_id, space_id, dxpl_id, buf);
 
     /* Check args */
     if (buf == NULL)
@@ -3192,7 +3185,6 @@ H5Tencode(hid_t obj_id, void *buf, size_t *nalloc)
     herr_t ret_value = SUCCEED;
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE3("e", "i*x*z", obj_id, buf, nalloc);
 
     /* Check argument and retrieve object */
     if (NULL == (dtype = (H5T_t *)H5I_object_verify(obj_id, H5I_DATATYPE)))
@@ -3227,7 +3219,6 @@ H5Tdecode(const void *buf)
     hid_t  ret_value; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("i", "*x", buf);
 
     /* Check args */
     if (buf == NULL)
@@ -3897,7 +3888,7 @@ H5T_copy_reopen(H5T_t *old_dt)
         if (NULL ==
             (reopened_fo = (H5T_shared_t *)H5FO_opened(old_dt->sh_loc.file, old_dt->sh_loc.u.loc.oh_addr))) {
             /* Clear any errors from H5FO_opened() */
-            H5E_clear_stack(NULL);
+            H5E_clear_stack();
 
             /* Open named datatype again */
             if (H5O_open(&old_dt->oloc) < 0)
@@ -4486,30 +4477,6 @@ H5T_get_size(const H5T_t *dt)
 
     FUNC_LEAVE_NOAPI(dt->shared->size)
 } /* end H5T_get_size() */
-
-/*-------------------------------------------------------------------------
- * Function:  H5T_get_force_conv
- *
- * Purpose:   Determines if the type has forced conversion. This will be
- *            true if and only if the type keeps a pointer to a file VOL
- *            object internally.
- *
- * Return:    true/false (never fails)
- *
- *-------------------------------------------------------------------------
- */
-bool
-H5T_get_force_conv(const H5T_t *dt)
-{
-    /* Use FUNC_ENTER_NOAPI_NOINIT_NOERR here to avoid performance issues */
-    FUNC_ENTER_NOAPI_NOINIT_NOERR
-
-    /* check args */
-    assert(dt);
-    assert(dt->shared);
-
-    FUNC_LEAVE_NOAPI(dt->shared->force_conv)
-} /* end H5T_get_force_conv() */
 
 /*-------------------------------------------------------------------------
  * Function:  H5T_cmp
@@ -5327,7 +5294,7 @@ H5T__init_path_table(void)
             fprintf(H5DEBUG(T), "H5T: unable to initialize no-op conversion function (ignored)\n");
 #endif
         /* Ignore any errors from the conversion function */
-        if (H5E_clear_stack(NULL) < 0)
+        if (H5E_clear_stack() < 0)
             HGOTO_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
     } /* end if */
 
@@ -5460,7 +5427,7 @@ H5T__path_find_init_new_path(H5T_path_t *path, const H5T_t *src, const H5T_t *ds
         if (status < 0) {
             memset(&(path->cdata), 0, sizeof(H5T_cdata_t));
             /* ignore the error */
-            if (H5E_clear_stack(NULL) < 0)
+            if (H5E_clear_stack() < 0)
                 HGOTO_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
             path_init_error = true;
         }
@@ -5532,7 +5499,7 @@ H5T__path_free(H5T_path_t *path, H5T_conv_ctx_t *conv_ctx)
     assert(conv_ctx);
 
     if (path->conv.u.app_func) {
-        H5T__print_stats(path, &nprint);
+        H5T__print_path_stats(path, &nprint);
 
         path->cdata.command = H5T_CONV_FREE;
 
@@ -5545,7 +5512,7 @@ H5T__path_free(H5T_path_t *path, H5T_conv_ctx_t *conv_ctx)
 
         if (status < 0) {
             /* Ignore any error from shutting down the path */
-            if (H5E_clear_stack(NULL) < 0)
+            if (H5E_clear_stack() < 0)
                 /* Push error, but keep going */
                 HDONE_ERROR(H5E_DATATYPE, H5E_CANTRESET, FAIL, "unable to clear current error stack");
 

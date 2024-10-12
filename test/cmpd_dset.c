@@ -15,6 +15,7 @@
 
 #define H5T_FRIEND  /*suppress error about including H5Tpkg      */
 #include "H5Tpkg.h" /*to turn off hardware conversions*/
+#include "H5Tconv_compound.h"
 #include "H5Iprivate.h"
 
 #include "h5test.h"
@@ -2831,7 +2832,7 @@ test_pack_ooo(void)
                                        * the compound */
     unsigned i, j;                    /* Indices */
 
-    HDsrand((unsigned)HDtime(NULL));
+    HDsrand((unsigned)time(NULL));
 
     /* Initialize "free_order" array to indicate that all slots in order are
      * free */
@@ -3333,7 +3334,7 @@ main(int argc, char *argv[])
     char     fname[256];
     unsigned nerrors = 0;
 
-    h5_reset();
+    h5_test_init();
 
     /* Turn off optimized compound converter? */
     if (argc > 1) {

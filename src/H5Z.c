@@ -226,7 +226,6 @@ H5Zregister(const void *cls)
 #endif
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "*x", cls);
 
     /* Check args */
     if (cls_real == NULL)
@@ -358,7 +357,6 @@ H5Zunregister(H5Z_filter_t id)
     herr_t ret_value = SUCCEED; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("e", "Zf", id);
 
     /* Check args */
     if (id < 0 || id > H5Z_FILTER_MAX)
@@ -706,7 +704,6 @@ H5Zfilter_avail(H5Z_filter_t id)
     htri_t ret_value = false; /* Return value */
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE1("t", "Zf", id);
 
     /* Check args */
     if (id < 0 || id > H5Z_FILTER_MAX)
@@ -780,15 +777,10 @@ H5Z__prelude_callback(const H5O_pline_t *pline, hid_t dcpl_id, hid_t type_id, hi
 
     /* Iterate over filters */
     for (u = 0; u < pline->nused; u++) {
-        /* Get filter information */
-        if (NULL == (fclass = H5Z_find(pline->filter[u].id))) {
-            /* Ignore errors from optional filters */
-            if (pline->filter[u].flags & H5Z_FLAG_OPTIONAL)
-                H5E_clear_stack(NULL);
-            else
-                HGOTO_ERROR(H5E_PLINE, H5E_NOTFOUND, FAIL, "required filter was not located");
-        } /* end if */
-        else {
+        /* Get filter information, ignoring failure from optional filters */
+        if (H5Z_find(pline->filter[u].flags & H5Z_FLAG_OPTIONAL, pline->filter[u].id, &fclass) < 0)
+            HGOTO_ERROR(H5E_PLINE, H5E_NOTFOUND, FAIL, "required filter was not located");
+        if (fclass) {
             /* Make correct callback */
             switch (prelude_type) {
                 case H5Z_PRELUDE_CAN_APPLY:
@@ -1297,24 +1289,28 @@ done:
  * Purpose:  Given a filter ID return a pointer to a global struct that
  *           defines the filter.
  *
- * Return:   Success:    Ptr to entry in global filter table.
- *           Failure:    NULL
+ * Return:   Non-negative on success
+ *           Negative on failure
  *-------------------------------------------------------------------------
  */
-H5Z_class2_t *
-H5Z_find(H5Z_filter_t id)
+herr_t
+H5Z_find(bool try, H5Z_filter_t id, H5Z_class2_t **cls)
 {
-    int           idx;              /* Filter index in global table */
-    H5Z_class2_t *ret_value = NULL; /* Return value */
+    int    idx;                 /* Filter index in global table */
+    herr_t ret_value = SUCCEED; /* Return value */
 
-    FUNC_ENTER_NOAPI(NULL)
+    FUNC_ENTER_NOAPI(FAIL)
 
     /* Get the index in the global table */
-    if ((idx = H5Z__find_idx(id)) < 0)
-        HGOTO_ERROR(H5E_PLINE, H5E_NOTFOUND, NULL, "required filter %d is not registered", id);
+    if ((idx = H5Z__find_idx(id)) < 0) {
+        *cls = NULL;
 
-    /* Set return value */
-    ret_value = H5Z_table_g + idx;
+        /* Don't push error on speculative lookup */
+        if (!try)
+            HGOTO_ERROR(H5E_PLINE, H5E_NOTFOUND, FAIL, "required filter %d is not registered", id);
+    }
+    else
+        *cls = H5Z_table_g + idx;
 
 done:
     FUNC_LEAVE_NOAPI(ret_value)
@@ -1428,8 +1424,12 @@ H5Z_pipeline(const H5O_pline_t *pline, unsigned flags, unsigned *filter_mask /*i
 
             tmp_flags = flags | (pline->filter[idx].flags);
             tmp_flags |= (edc_read == H5Z_DISABLE_EDC) ? H5Z_FLAG_SKIP_EDC : 0;
-            new_nbytes = (fclass->filter)(tmp_flags, pline->filter[idx].cd_nelmts,
-                                          pline->filter[idx].cd_values, *nbytes, buf_size, buf);
+            H5E_PAUSE_ERRORS
+            {
+                new_nbytes = (fclass->filter)(tmp_flags, pline->filter[idx].cd_nelmts,
+                                              pline->filter[idx].cd_values, *nbytes, buf_size, buf);
+            }
+            H5E_RESUME_ERRORS
 
 #ifdef H5Z_DEBUG
             H5_timer_stop(&timer);
@@ -1451,7 +1451,6 @@ H5Z_pipeline(const H5O_pline_t *pline, unsigned flags, unsigned *filter_mask /*i
 
                 *nbytes = *buf_size;
                 failed |= (unsigned)1 << idx;
-                H5E_clear_stack(NULL);
             }
             else
                 *nbytes = new_nbytes;
@@ -1468,7 +1467,6 @@ H5Z_pipeline(const H5O_pline_t *pline, unsigned flags, unsigned *filter_mask /*i
                 if ((pline->filter[idx].flags & H5Z_FLAG_OPTIONAL) == 0)
                     HGOTO_ERROR(H5E_PLINE, H5E_WRITEERROR, FAIL, "required filter is not registered");
                 failed |= (unsigned)1 << idx;
-                H5E_clear_stack(NULL);
                 continue; /* filter excluded */
             }             /* end if */
 
@@ -1479,8 +1477,12 @@ H5Z_pipeline(const H5O_pline_t *pline, unsigned flags, unsigned *filter_mask /*i
             H5_timer_start(&timer);
 #endif
 
-            new_nbytes = (fclass->filter)(flags | (pline->filter[idx].flags), pline->filter[idx].cd_nelmts,
-                                          pline->filter[idx].cd_values, *nbytes, buf_size, buf);
+            H5E_PAUSE_ERRORS
+            {
+                new_nbytes = (fclass->filter)(flags | pline->filter[idx].flags, pline->filter[idx].cd_nelmts,
+                                              pline->filter[idx].cd_values, *nbytes, buf_size, buf);
+            }
+            H5E_RESUME_ERRORS
 
 #ifdef H5Z_DEBUG
             H5_timer_stop(&timer);
@@ -1504,7 +1506,6 @@ H5Z_pipeline(const H5O_pline_t *pline, unsigned flags, unsigned *filter_mask /*i
                     *nbytes = *buf_size;
                 }
                 failed |= (unsigned)1 << idx;
-                H5E_clear_stack(NULL);
             }
             else
                 *nbytes = new_nbytes;
@@ -1719,7 +1720,6 @@ H5Zget_filter_info(H5Z_filter_t filter, unsigned *filter_config_flags /*out*/)
     herr_t ret_value = SUCCEED;
 
     FUNC_ENTER_API(FAIL)
-    H5TRACE2("e", "Zf*Iu", filter, filter_config_flags);
 
     /* Get the filter info */
     if (H5Z_get_filter_info(filter, filter_config_flags) < 0)
@@ -1742,13 +1742,13 @@ done:
 herr_t
 H5Z_get_filter_info(H5Z_filter_t filter, unsigned int *filter_config_flags)
 {
-    H5Z_class2_t *fclass;
+    H5Z_class2_t *fclass    = NULL;
     herr_t        ret_value = SUCCEED;
 
     FUNC_ENTER_NOAPI(FAIL)
 
     /* Look up the filter class info */
-    if (NULL == (fclass = H5Z_find(filter)))
+    if (H5Z_find(false, filter, &fclass) < 0)
         HGOTO_ERROR(H5E_PLINE, H5E_BADVALUE, FAIL, "Filter not defined");
 
     /* Set the filter config flags for the application */

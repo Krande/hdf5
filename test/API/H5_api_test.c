@@ -143,7 +143,7 @@ main(int argc, char **argv)
     n_tests_failed_g  = 0;
     n_tests_skipped_g = 0;
 
-    seed = (unsigned)HDtime(NULL);
+    seed = (unsigned)time(NULL);
     srand(seed);
 
     if (NULL == (test_path_prefix = getenv(HDF5_API_TEST_PATH_PREFIX)))
@@ -263,7 +263,14 @@ main(int argc, char **argv)
     H5_api_test_run();
 
     printf("Cleaning up testing files\n");
-    H5Fdelete(H5_api_test_filename, fapl_id);
+
+    H5E_BEGIN_TRY
+    {
+        if (H5Fis_accessible(H5_api_test_filename, H5P_DEFAULT) > 0) {
+            H5Fdelete(H5_api_test_filename, fapl_id);
+        }
+    }
+    H5E_END_TRY
 
     if (n_tests_run_g > 0) {
         printf("%zu/%zu (%.2f%%) API tests passed with VOL connector '%s'\n", n_tests_passed_g, n_tests_run_g,

@@ -459,7 +459,6 @@ CCDEPMODE = @CCDEPMODE@
 CC_VERSION = @CC_VERSION@
 CFLAGS = @CFLAGS@
 CLANG_SANITIZE_CHECKS = @CLANG_SANITIZE_CHECKS@
-CODESTACK = @CODESTACK@
 CONFIG_DATE = @CONFIG_DATE@
 CONFIG_MODE = @CONFIG_MODE@
 CONFIG_USER = @CONFIG_USER@
@@ -629,7 +628,6 @@ LL_PATH = @LL_PATH@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LT_STATIC_EXEC = @LT_STATIC_EXEC@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -823,7 +821,7 @@ CHECK_CLEANFILES = *.chkexe *.chklog
 @BUILD_TESTS_CONDITIONAL_FALSE@TEST_DIR = 
 @BUILD_TESTS_CONDITIONAL_TRUE@TEST_DIR = test
 @BUILD_CXX_CONDITIONAL_TRUE@SUBDIRS = src $(TEST_DIR)
-DIST_SUBDIRS = src test examples
+DIST_SUBDIRS = src test
 
 # Automake needs to be taught how to build lib, progs and tests targets.
 # These will be filled in automatically for the most part (e.g.,
@@ -1284,7 +1282,7 @@ install-ps: install-ps-recursive
 
 install-ps-am:
 
-installcheck-am: installcheck-local
+installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
 	-rm -f Makefile
@@ -1316,10 +1314,10 @@ uninstall-am:
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installcheck-local installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am ps ps-am recheck tags tags-am uninstall uninstall-am
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool mostlyclean-local pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
@@ -1335,22 +1333,6 @@ uninstall-am:
 
 help:
 	@$(top_srcdir)/bin/makehelp
-
-# Install examples
-install-examples uninstall-examples:
-	@(cd examples && $(MAKE) $(AM_MAKEFLAGS) $@) || exit 1;
-
-installcheck-local:
-	@(cd examples && $(MAKE) $(AM_MAKEFLAGS) $@) || exit 1;
-
-# Clean examples when check-clean is invoked
-check-clean ::
-	@$(MAKE) $(AM_MAKEFLAGS) build-$@ || exit 1;
-	@for d in X $(SUBDIRS) examples; do                                   \
-	    if test $$d != X && test $$d != .; then                           \
-	        (set -x; cd $$d && $(MAKE) $(AM_MAKEFLAGS) $@) || exit 1;     \
-	    fi;                                                               \
-	done
 
 # lib/progs/tests targets recurse into subdirectories. build-* targets
 # build files in this directory.

@@ -83,15 +83,19 @@
 /**
  * For tweaks, bug-fixes, or development
  */
-#define H5_VERS_RELEASE 4
+#define H5_VERS_RELEASE 5
 /**
  * For pre-releases like \c snap0. Empty string for official releases.
  */
-#define H5_VERS_SUBRELEASE "3"
+#define H5_VERS_SUBRELEASE ""
+/**
+ * Short version string
+ */
+#define H5_VERS_STR "1.14.5"
 /**
  * Full version string
  */
-#define H5_VERS_INFO "HDF5 library version: 1.14.4-3"
+#define H5_VERS_INFO "HDF5 library version: 1.14.5"
 
 #define H5check() H5check_version(H5_VERS_MAJOR, H5_VERS_MINOR, H5_VERS_RELEASE)
 
@@ -103,7 +107,7 @@
  * \param[in] Maj Major version number - A non-negative integer value
  * \param[in] Min Minor version number - A non-negative integer value
  * \param[in] Rel Release version number - A non-negative integer value
- * \returns A value of 1 is returned if the library version is greater than
+ * \return A value of 1 is returned if the library version is greater than
  *          or equal to the version number specified.\n
  *          A value of 0 is returned if the library version is less than the
  *          version number specified.\n
@@ -139,7 +143,7 @@
  * \param[in] Maj Major version number - A non-negative integer value
  * \param[in] Min Minor version number - A non-negative integer value
  * \param[in] Rel Release version number - A non-negative integer value
- * \returns A value of 1 is returned if the library version is less than
+ * \return A value of 1 is returned if the library version is less than
  *          or equal to the version number specified.\n
  *          A value of 0 is returned if the library version is greater than the
  *          version number specified.\n
@@ -423,7 +427,7 @@ extern "C" {
  * \details H5open() initializes the HDF5 library.
  *
  * \details When the HDF5 library is used in a C application, the library is
- *          automatically initialized when the first HDf5 function call is
+ *          automatically initialized when the first HDF5 function call is
  *          issued. If one finds that an HDF5 library function is failing
  *          inexplicably, H5open() can be called first. It is safe to call
  *          H5open() before an application issues any other function calls to
@@ -631,7 +635,7 @@ H5_DLL herr_t H5get_libversion(unsigned *majnum, unsigned *minnum, unsigned *rel
  *          example:
  *
  *          An official HDF5 release is labelled as follows:
- *          HDF5 Release \Code{\<majnum\>.\<minnum\>.\<relnum\>}\n
+ *          HDF5 Release \TText{\<majnum\>.\<minnum\>.\<relnum\>}\n
  *          For example, in HDF5 Release 1.8.5:
  *          \li 1 is the major version number, \p majnum.
  *          \li 8 is the minor version number, \p minnum.
@@ -815,15 +819,15 @@ H5_DLL void *H5allocate_memory(size_t size, hbool_t clear);
  *          This function is intended to have the semantics of realloc():
  *
  *          <table>
- *            <tr><td>\Code{H5resize_memory(buffer, size)}</td>
+ *            <tr><td>\TText{H5resize_memory(buffer, size)}</td>
  *                <td>Resizes buffer. Returns pointer to resized buffer.</td></tr>
- *            <tr><td>\Code{H5resize_memory(NULL, size)}</td>
+ *            <tr><td>\TText{H5resize_memory(NULL, size)}</td>
  *                <td>Allocates memory using HDF5 Library allocator.
  *                    Returns pointer to new buffer</td></tr>
- *            <tr><td>\Code{H5resize_memory(buffer, 0)}</td>
+ *            <tr><td>\TText{H5resize_memory(buffer, 0)}</td>
  *                <td>Frees memory using HDF5 Library allocator.
  *                    Returns NULL.</td></tr>
- *            <tr><td>\Code{H5resize_memory(NULL, 0)}</td>
+ *            <tr><td>\TText{H5resize_memory(NULL, 0)}</td>
  *                <td>Returns NULL (undefined in C standard).</td></tr>
  *          </table>
  *

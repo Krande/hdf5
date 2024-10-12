@@ -304,7 +304,7 @@
  *
  *       </td>
  *       <td>
- * @see H5R
+ * @see @ref H5R
  *       </td>
  *     </tr>
  *     <tr>
@@ -598,10 +598,10 @@
  *     </tr>
  *     <tr>
  *       <td>
- * #H5T_STD_REF_OBJ
+ * #H5T_STD_REF
  *       </td>
  *       <td span='3'>
- * Reference to an entire object in a file
+ * Reference to an object in a file
  *       </td>
  *     </tr>
  *   </table>
@@ -971,7 +971,7 @@
  * translated to and from standard types of the same class, as described above.
  *
  * \subsection subsec_datatype_function Datatype Function Summaries
- * @see H5T reference manual provides a reference list of datatype functions, the H5T APIs.
+ * see \ref H5T reference manual provides a reference list of datatype functions, the H5T APIs.
  *
  * \subsection subsec_datatype_program Programming Model for Datatypes
  * The HDF5 Library implements an object-oriented model of datatypes. HDF5 datatypes are
@@ -2019,7 +2019,7 @@ filled according to the value of this property. The padding can be:
  * </tr>
  * </table>
  *
- * <em>Code for a compound datatype nested in a compound datatype</em>
+ * <em>TText for a compound datatype nested in a compound datatype</em>
  * \code
  *   typedef struct {
  *     complex_t x;
@@ -2164,6 +2164,7 @@ filled according to the value of this property. The padding can be:
  * \endcode
  *
  * The example below shows the content of the file written on a little-endian machine.
+ *
  * <em>Create and write a little-endian dataset with a compound datatype in C</em>
  * \code
  *   HDF5 “SDScompound.h5” {
@@ -2248,6 +2249,7 @@ filled according to the value of this property. The padding can be:
  *
  * The figure below shows the content of the file written on a little-endian machine. Only float and
  * double fields are written. The default fill value is used to initialize the unwritten integer field.
+ *
  * <em>Writing floats and doubles to a dataset on a little-endian system</em>
  * \code
  *   HDF5 “SDScompound.h5” {
@@ -2285,6 +2287,7 @@ filled according to the value of this property. The padding can be:
  * compound datatype. As this example illustrates, writing and reading compound datatypes in
  * Fortran is always done by fields. The content of the written file is the same as shown in the
  * example above.
+ *
  * <em>Create and write a dataset with a compound datatype in Fortran</em>
  * \code
  *   ! One cannot write an array of a derived datatype in
@@ -2921,6 +2924,7 @@ filled according to the value of this property. The padding can be:
  * declaration of a datatype of type #H5T_C_S1 which is set to #H5T_VARIABLE. The HDF5
  * Library automatically translates between this and the vl_t structure. Note: the #H5T_VARIABLE
  * size can only be used with string datatypes.
+ *
  * <em>Set the string datatype size to H5T_VARIABLE</em>
  * \code
  *   tid1 = H5Tcopy (H5T_C_S1);
@@ -2929,6 +2933,7 @@ filled according to the value of this property. The padding can be:
  *
  * Variable-length strings can be read into C strings (in other words, pointers to zero terminated
  * arrays of char). See the example below.
+ *
  * <em>Read variable-length strings into C strings</em>
  * \code
  *   char *rdata[SPACE1_DIM1];
@@ -2943,8 +2948,63 @@ filled according to the value of this property. The padding can be:
  * \endcode
  *
  * \subsubsection subsubsec_datatype_other_refs Reference
+ * In HDF5, objects (groups, datasets, attributes, and committed datatypes) are usually accessed by name.
+ * There is another way to access stored objects - by reference. Before HDF5 1.12.0, there were only two
+ * reference datatypes: object reference and region reference. Since 1.12.0, attribute references and
+ * external references were added. And all references can be stored and retrieved from a file by invoking
+ * the #H5Dwrite and #H5Dread functions with a single predefined type: #H5T_STD_REF.
+ *
+ * The first example below shows an example of code that creates
+ * references to four objects, and then writes the array of object references to a dataset. The second
+ * example below shows a dataset of datatype reference being read and one of the reference objects
+ * being dereferenced to obtain an object pointer.
+ *
+ * <em>Create object references and write to a dataset</em>
+ * \code
+ *   dataset = H5Dcreate (fid1, “Dataset3”, H5T_STD_REF, sid1, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+ *
+ *   // Create reference to dataset
+ *   ret = H5Rcreate_object(fid1,“/Group1/Dataset1”, H5R_OBJECT, &wbuf[0]);
+ *
+ *   // Create reference to dataset
+ *   ret = H5Rcreate_object(fid1, “/Group1/Dataset2”, H5R_OBJECT, &wbuf[1]);
+ *
+ *   // Create reference to group
+ *   ret = H5Rcreate_object(fid1, “/Group1”, H5R_OBJECT, &wbuf[2]);
+ *
+ *   // Create reference to committed datatype
+ *   ret = H5Rcreate_object(fid1, “/Group1/Datatype1”, H5R_OBJECT, &wbuf[3]);
+ *
+ *   // Write selection to disk
+ *   ret = H5Dwrite(dataset, H5T_STD_REF, H5S_ALL, H5S_ALL, H5P_DEFAULT, wbuf);
+ *
+ *   // Release buffers
+ *       status = H5Rdestroy(&wdata[0]);
+ *       status = H5Rdestroy(&wdata[1]);
+ *       status = H5Rdestroy(&wdata[2]);
+ *       status = H5Rdestroy(&wdata[3]);
+ * \endcode
+ *
+ * <em>Read a dataset with a reference datatype</em>
+ * \code
+ *   rbuf = (H5R_ref_t *)malloc(dims[0] * sizeof(H5R_ref_t));
+ *
+ *   // Read selection from disk
+ *   ret = H5Dread(dataset, H5T_STD_REF, H5S_ALL, H5S_ALL, H5P_DEFAULT, rbuf);
+ *
+ *   // Open dataset object
+ *   dset2 = H5Ropen_object(&rbuf[0], H5P_DEFAULT, H5P_DEFAULT);
+ *
+ *   // Release buffers
+ *   status = H5Rdestroy(&rbuf[0]);
+ *   status = H5Rdestroy(&rbuf[1]);
+ *   status = H5Rdestroy(&rbuf[2]);
+ *   status = H5Rdestroy(&rbuf[3]);
+ * \endcode
+ *
+ * \subsubsection subsubsec_datatype_other_drefs Deprecated Reference
  * In HDF5, objects (groups, datasets, and committed datatypes) are usually accessed by name.
- * There is another way to access stored objects - by reference. There are two reference datatypes:
+ * There is another way to access stored objects - by reference. There are two deprecated reference datatypes:
  * object reference and region reference. Object reference objects are created with #H5Rcreate and
  * other calls (cross reference). These objects can be stored and retrieved in a dataset as elements
  * with reference datatype. The first example below shows an example of code that creates
@@ -2998,6 +3058,7 @@ filled according to the value of this property. The padding can be:
  * would be as an array of integers. The example below shows an example of how to create an
  * enumeration with five elements. The elements map symbolic names to 2-byte integers. See the
  * table below.
+ *
  * <em>Create an enumeration with five elements</em>
  * \code
  *   hid_t hdf_en_colors;
@@ -3527,6 +3588,7 @@ filled according to the value of this property. The padding can be:
  *
  * To create two or more datasets that share a common datatype, first commit the datatype, and then
  * use that datatype to create the datasets. See the example below.
+ *
  * <em> Create a shareable datatype</em>
  * \code
  *   hid_t t1 = ...some transient type...;
@@ -3642,6 +3704,7 @@ filled according to the value of this property. The padding can be:
  * memory. The destination datatype must be specified in the #H5Dread call. The example below
  * shows an example of reading a dataset of 32-bit integers. The figure below the example shows
  * the data transformation that is performed.
+ *
  * <em>Specify the destination datatype with H5Dread</em>
  * \code
  *   // Stored as H5T_STD_BE32
@@ -3742,12 +3805,14 @@ filled according to the value of this property. The padding can be:
  * The currently supported text format used by #H5LTtext_to_dtype and #H5LTdtype_to_text is the
  * data description language (DDL) and conforms to the \ref DDLBNF114. The portion of the
  * \ref DDLBNF114 that defines HDF5 datatypes appears below.
+ *
  * <em>The definition of HDF5 datatypes from the HDF5 DDL</em>
  * \code
  *   <datatype> ::= <atomic_type> | <compound_type> | <variable_length_type> | <array_type>
  *
  *   <atomic_type> ::= <integer> | <float> | <time> | <string> |
  *                     <bitfield> | <opaque> | <reference> | <enum>
+ *
  *   <integer> ::= H5T_STD_I8BE | H5T_STD_I8LE |
  *                 H5T_STD_I16BE | H5T_STD_I16LE |
  *                 H5T_STD_I32BE | H5T_STD_I32LE |
@@ -3761,18 +3826,22 @@ filled according to the value of this property. The padding can be:
  *                 H5T_NATIVE_INT | H5T_NATIVE_UINT |
  *                 H5T_NATIVE_LONG | H5T_NATIVE_ULONG |
  *                 H5T_NATIVE_LLONG | H5T_NATIVE_ULLONG
+ *
  *   <float> ::= H5T_IEEE_F16BE | H5T_IEEE_F16LE |
  *               H5T_IEEE_F32BE | H5T_IEEE_F32LE |
  *               H5T_IEEE_F64BE | H5T_IEEE_F64LE |
  *               H5T_NATIVE_FLOAT16 | H5T_NATIVE_FLOAT |
  *               H5T_NATIVE_DOUBLE | H5T_NATIVE_LDOUBLE
+ *
  *   <time> ::= H5T_TIME: not yet implemented
+ *
  *   <string> ::= H5T_STRING {
  *                    STRSIZE <strsize> ;
  *                    STRPAD <strpad> ;
  *                    CSET <cset> ;
  *                    CTYPE <ctype> ;
  *                }
+ *
  *   <strsize> ::= <int_value>
  *   <strpad> ::= H5T_STR_NULLTERM | H5T_STR_NULLPAD | H5T_STR_SPACEPAD
  *   <cset> ::= H5T_CSET_ASCII | H5T_CSET_UTF8
@@ -3789,7 +3858,7 @@ filled according to the value of this property. The padding can be:
  *                }
  *
  *   <reference> ::= H5T_REFERENCE { <ref_type> }
- *   <ref_type> ::= H5T_STD_REF_OBJECT | H5T_STD_REF_DSETREG
+ *   <ref_type> ::= H5T_STD_REF_OBJECT | H5T_STD_REF_DSETREG | H5T_STD_REF | UNDEFINED
  *
  *   <compound_type> ::= H5T_COMPOUND {
  *                           <member_type_def>+
@@ -3946,8 +4015,8 @@ filled according to the value of this property. The padding can be:
  *              component, they have a C-like type name.
  *          \li If the type begins with \c U then it is the unsigned version of
  *              the integer type; other integer types are signed.
- *          \li The datatype \c LLONG corresponds C's \Code{long long} and
- *              \c LDOUBLE is \Code{long double}. These types might be the same
+ *          \li The datatype \c LLONG corresponds C's \TText{long long} and
+ *              \c LDOUBLE is \TText{long double}. These types might be the same
  *              as \c LONG and \c DOUBLE, respectively.
  * <div>
  * \snippet{doc} tables/predefinedDatatypes.dox predefined_native_datatypes_table

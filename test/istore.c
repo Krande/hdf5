@@ -582,7 +582,7 @@ main(int argc, char *argv[])
     printf("\n");
 
     /* Set the random # seed */
-    HDsrandom((unsigned)HDtime(NULL));
+    HDsrandom((unsigned)time(NULL));
 
     /* Check to see if the file system supports POSIX-style sparse files.
      * Windows NTFS does not, so we want to avoid tests which create
@@ -591,7 +591,7 @@ main(int argc, char *argv[])
     has_sparse_support = is_sparse();
 
     /* Reset library */
-    h5_reset();
+    h5_test_init();
     fapl = h5_fileaccess();
 
     /* Use larger file addresses... */

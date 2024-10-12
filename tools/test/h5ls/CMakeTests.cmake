@@ -51,13 +51,6 @@
       tudlink.h5
       tvldtypes1.h5
   )
-
-  set (LIST_ERR_TEST_FILES
-      nosuchfile.err
-      textlinksrc-nodangle-1.err
-      tgroup-1.err
-  )
-
   set (LIST_OTHER_TEST_FILES
       help-1.ls
       help-2.ls
@@ -136,9 +129,6 @@
   foreach (listothers ${LIST_OTHER_TEST_FILES})
     HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/expected/${listothers}" "${PROJECT_BINARY_DIR}/testfiles/${listothers}" "h5ls_files")
   endforeach ()
-  foreach (listerrfiles ${LIST_ERR_TEST_FILES})
-    HDFTEST_COPY_FILE("${PROJECT_SOURCE_DIR}/errfiles/${listerrfiles}" "${PROJECT_BINARY_DIR}/testfiles/${listerrfiles}" "h5ls_files")
-  endforeach ()
   add_custom_target(h5ls_files ALL COMMENT "Copying files needed by h5ls tests" DEPENDS ${h5ls_files_list})
 
 ##############################################################################
@@ -149,7 +139,7 @@
 
   macro (ADD_H5_TEST resultfile resultcode)
     # If using memchecker add tests without using scripts
-    if (HDF5_USING_ANALYSIS_TOOL)
+    if (HDF5_ENABLE_USING_MEMCHECKER)
       add_test (NAME H5LS-${resultfile} COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:h5ls> ${ARGN})
       set_tests_properties (H5LS-${resultfile} PROPERTIES
           WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/testfiles"
@@ -182,7 +172,7 @@
 
   macro (ADD_H5_ERR_TEST resultfile resultcode result_errcheck)
     # If using memchecker add tests without using scripts
-    if (HDF5_USING_ANALYSIS_TOOL)
+    if (HDF5_ENABLE_USING_MEMCHECKER)
       add_test (NAME H5LS-${resultfile} COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:h5ls> ${ARGN})
       set_tests_properties (H5LS-${resultfile} PROPERTIES WORKING_DIRECTORY "${PROJECT_BINARY_DIR}/testfiles")
       if ("${resultcode}" STREQUAL "1")
@@ -213,7 +203,7 @@
   endmacro ()
 
   macro (ADD_H5_UD_TEST testname resultcode resultfile)
-    if (NOT HDF5_USING_ANALYSIS_TOOL)
+    if (NOT HDF5_ENABLE_USING_MEMCHECKER)
       add_test (
           NAME H5LS_UD-${testname}-${resultfile}
           COMMAND "${CMAKE_COMMAND}"
@@ -267,6 +257,9 @@
   ADD_H5_TEST (tall-2 0 -w80 -r -d tall.h5)
   ADD_H5_TEST (tgroup 0 -w80 tgroup.h5)
   ADD_H5_TEST (tgroup-3 0 -w80 tgroup.h5/g1)
+
+  # test page buffer cache command
+  ADD_H5_TEST (tall-pbc 0 -w80 --page-buffer-size=8192 tall.h5)
 
   # test for displaying groups
   # The following combination of arguments is expected to return an error message

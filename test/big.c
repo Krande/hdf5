@@ -591,7 +591,8 @@ test_sec2(hid_t fapl)
 quit:
     /* End with normal return code */
     /* Clean up the test file */
-    h5_clean_files(FILENAME, fapl);
+    h5_delete_all_test_files(FILENAME, fapl);
+    H5Pclose(fapl);
     HDremove(DNAME);
     return 0;
 
@@ -628,7 +629,8 @@ test_stdio(hid_t fapl)
 quit:
     /* End with normal return code */
     /* Clean up the test file */
-    h5_clean_files(FILENAME, fapl);
+    h5_delete_all_test_files(FILENAME, fapl);
+    H5Pclose(fapl);
     HDremove(DNAME);
     fflush(stdout);
     return 0;
@@ -683,7 +685,8 @@ test_family(hid_t fapl)
 quit:
     /* End with normal return code */
     /* Clean up the test file */
-    h5_clean_files(FILENAME, fapl);
+    h5_delete_all_test_files(FILENAME, fapl);
+    H5Pclose(fapl);
     HDremove(DNAME);
     return 0;
 
@@ -752,7 +755,7 @@ main(int ac, char **av)
         sparse_support = is_sparse();
 
     /* Choose random # seed */
-    seed = (unsigned long)HDtime(NULL);
+    seed = (unsigned long)time(NULL);
 #if 0
     /* seed = (unsigned long)1155438845; */
     fprintf(stderr, "Random # seed was: %lu\n", seed);

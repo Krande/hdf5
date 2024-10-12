@@ -14,6 +14,33 @@
 /* A simple test program to see if a function "works" */
 #define SIMPLE_TEST(x) int main(void){ x; return 0; }
 
+#ifdef HAVE___FLOAT128
+
+/* Check if __float128 works (only used in the Fortran interface) */
+int
+main ()
+{
+    __float128 x;
+
+    return 0;
+}
+
+#endif /* HAVE___FLOAT128 */
+
+#ifdef HAVE_BUILTIN_EXPECT
+
+int
+main ()
+{
+    void *ptr = (void*) 0;
+
+    if (__builtin_expect (ptr != (void*) 0, 1))
+        return 0;
+
+    return 0;
+}
+
+#endif /* HAVE_BUILTIN_EXPECT */
 
 #ifdef HAVE_ATTRIBUTE
 

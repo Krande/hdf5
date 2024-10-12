@@ -1,16 +1,17 @@
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.18)
 project (HDF5Examples_C C)
 
 #-----------------------------------------------------------------------------
 # Build the C Examples
 #-----------------------------------------------------------------------------
+add_subdirectory (${PROJECT_SOURCE_DIR}/TUTR)
 add_subdirectory (${PROJECT_SOURCE_DIR}/H5D)
 add_subdirectory (${PROJECT_SOURCE_DIR}/H5G)
 add_subdirectory (${PROJECT_SOURCE_DIR}/H5T)
 
 if (${H5_LIBVER_DIR} GREATER 16)
 #  add_subdirectory (${PROJECT_SOURCE_DIR}/Perf)
-  if (USE_SHARED_LIBS AND HDF_BUILD_FILTERS AND HDF5_ENABLE_PLUGIN_SUPPORT)
+  if (USE_SHARED_LIBS AND H5EX_BUILD_FILTERS AND HDF5_ENABLE_PLUGIN_SUPPORT)
     add_subdirectory (${PROJECT_SOURCE_DIR}/H5FLT)
   endif ()
 endif ()

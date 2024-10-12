@@ -2420,10 +2420,11 @@ test_file_getname(void)
     file_id = H5Fcreate(FILE1, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
     CHECK(file_id, FAIL, "H5Fcreate");
 
-    /* Get and verify file name */
+    /* Get and verify file name and its length */
     name_len = H5Fget_name(file_id, name, (size_t)TESTA_NAME_BUF_SIZE);
     CHECK(name_len, FAIL, "H5Fget_name");
     VERIFY_STR(name, FILE1, "H5Fget_name");
+    VERIFY(name_len, strlen(FILE1), "H5Fget_name");
 
     /* Create a group in the root group */
     group_id = H5Gcreate2(file_id, TESTA_GROUPNAME, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -4489,7 +4490,8 @@ test_filespace_info(const char *driver_name)
         }         /* end for fs_persist */
 
         /* close fapl_ and remove the file */
-        h5_clean_files(FILESPACE_NAME, my_fapl);
+        h5_delete_all_test_files(FILESPACE_NAME, my_fapl);
+        H5Pclose(my_fapl);
     } /* end for new_format */
 
 } /* test_filespace_info() */
@@ -4717,7 +4719,8 @@ test_file_freespace(const char *driver_name)
         /* Check that the file reverted to empty size */
         VERIFY(mod_filesize, empty_filesize, "H5Fget_freespace");
 
-        h5_clean_files(FILESPACE_NAME, my_fapl);
+        h5_delete_all_test_files(FILESPACE_NAME, my_fapl);
+        H5Pclose(my_fapl);
 
     } /* end for */
 
@@ -4805,7 +4808,8 @@ test_sects_freespace(const char *driver_name, bool new_format)
     if (!vol_is_native) {
         CHECK(H5Fclose(file), FAIL, "H5Fclose");
         CHECK(H5Pclose(fcpl), FAIL, "H5Pclose");
-        h5_clean_files(FILESPACE_NAME, fapl);
+        h5_delete_all_test_files(FILESPACE_NAME, fapl);
+        H5Pclose(fapl);
         CHECK(H5Pclose(fapl), FAIL, "H5Pclose");
         MESSAGE(5, (" -- SKIPPED --\n"));
         return;
@@ -4981,7 +4985,8 @@ test_sects_freespace(const char *driver_name, bool new_format)
     ret = H5Pclose(fcpl);
     CHECK(fcpl, FAIL, "H5Pclose");
 
-    h5_clean_files(FILESPACE_NAME, fapl);
+    h5_delete_all_test_files(FILESPACE_NAME, fapl);
+    H5Pclose(fapl);
 
 } /* end test_sects_freespace() */
 
@@ -8097,6 +8102,42 @@ test_min_dset_ohdr(void)
 
 /****************************************************************
 **
+**  test_unseekable_file():
+**    Test that attempting to create/open an unseekable file fails gracefully
+**    without a segfault (see hdf5#1498)
+****************************************************************/
+static void
+test_unseekable_file(void)
+{
+    /* Output message about test being performed */
+    MESSAGE(5, ("Testing creating/opening an unseekable file\n"));
+
+    /* Flush message in case this test segfaults */
+    fflush(stdout);
+
+    /* Creation */
+#ifdef H5_HAVE_WIN32_API
+    H5Fcreate("NUL", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+#else
+    H5Fcreate("/dev/null", H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+#endif
+
+    /* Should fail without segfault */
+    /* TODO - Does not properly fail on all systems */
+    /* VERIFY(file_id, H5I_INVALID_HID, "H5Fcreate"); */
+
+    /* Opening */
+#ifdef H5_HAVE_WIN32_API
+    H5Fopen("NUL", H5F_ACC_RDWR, H5P_DEFAULT);
+#else
+    H5Fopen("/dev/null", H5F_ACC_RDWR, H5P_DEFAULT);
+#endif
+
+    /* TODO - Does not properly fail on all systems */
+    /* VERIFY(file_id, H5I_INVALID_HID, "H5Fopen"); */
+}
+/****************************************************************
+**
 **  test_deprec():
 **    Test deprecated functionality.
 **
@@ -8148,6 +8189,14 @@ test_deprec(const char *driver_name)
     /* Get the file's dataset creation property list */
     fcpl = H5Fget_create_plist(file);
     CHECK(fcpl, FAIL, "H5Fget_create_plist");
+
+    /* Test passing in an ID that is not a file ID, should fail */
+    H5E_BEGIN_TRY
+    {
+        ret = H5Fset_latest_format(fcpl, true);
+    }
+    H5E_END_TRY
+    VERIFY(ret, FAIL, "H5Fset_latest_format");
 
     /* Get the file's version information */
     ret = H5Pget_version(fcpl, &super, &freelist, &stab, &shhdr);
@@ -8414,10 +8463,11 @@ test_file(void)
 
     test_libver_bounds(); /* Test compatibility for file space management */
     test_libver_bounds_low_high(driver_name);
-    test_libver_macros();  /* Test the macros for library version comparison */
-    test_libver_macros2(); /* Test the macros for library version comparison */
-    test_incr_filesize();  /* Test H5Fincrement_filesize() and H5Fget_eoa() */
-    test_min_dset_ohdr();  /* Test dataset object header minimization */
+    test_libver_macros();   /* Test the macros for library version comparison */
+    test_libver_macros2();  /* Test the macros for library version comparison */
+    test_incr_filesize();   /* Test H5Fincrement_filesize() and H5Fget_eoa() */
+    test_min_dset_ohdr();   /* Test dataset object header minimization */
+    test_unseekable_file(); /* Test attempting to open/create an unseekable file */
 #ifndef H5_NO_DEPRECATED_SYMBOLS
     test_file_ishdf5(driver_name); /* Test detecting HDF5 files correctly */
     test_deprec(driver_name);      /* Test deprecated routines */

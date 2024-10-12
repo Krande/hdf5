@@ -41,7 +41,7 @@ Once a pull request is correctly formatted and passes **ALL** CI tests, it will 
 community members who can approve pull requests. The HDF Group developers will work with you to ensure that the pull request satisfies the acceptance
 criteria described in the next section.
 
-<h2 id="criteria">Acceptance criteria for a pull request</h2>
+<h2 id="workflow">Workflow</h2>
 
 We appreciate every contribution we receive, but we may not accept them all.  Those that we *do* satisfy the following criteria:
 
@@ -122,10 +122,10 @@ Please make sure that you check the items applicable to your pull request:
   * [ ] If changes were done to Autotools build, were they added to CMake and vice versa?
   * [ ] Is the pull request applicable to any other branches? If yes, which ones? Please document it in the GitHub issue.
   * [ ] Is the new code sufficiently documented for future maintenance?
-  * [ ] Does the new feature require a change to an existing API? See "API Compatibility Macros" document (https://docs.hdfgroup.org/hdf5/v1_14/v1_14_4/api-compat-macros.html)
+  * [ ] Does the new feature require a change to an existing API? See "API Compatibility Macros" document (https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_5/documentation/doxygen/api-compat-macros.html)
 * Documentation
   * [ ] Was the change described in the release_docs/RELEASE.txt file?
-  * [ ] Was the new function documented in the corresponding public header file using [Doxygen](https://hdfgroup.github.io/hdf5/v1_14_4/_r_m_t.html)?
+  * [ ] Was the new function documented in the corresponding public header file using [Doxygen](https://support.hdfgroup.org/releases/hdf5/v1_14/v1_14_5/documentation/doxygen/_r_m_t.html)?
   * [ ] Was new functionality documented for the HDF5 community (the level of documentation depends on the feature; ask us what would be appropriate)
 * Testing
   * [ ] Does the pull request have tests?

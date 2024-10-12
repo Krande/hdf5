@@ -20,9 +20,12 @@
         "ZLIB_PACKAGE_NAME": {"type": "STRING", "value": "zlib"},
         "ZLIB_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/madler/zlib/releases/download/v1.3"},
         "ZLIB_TGZ_NAME": {"type": "STRING", "value": "zlib-1.3.tar.gz"},
+        "ZLIBNG_PACKAGE_NAME": {"type": "STRING", "value": "zlib-ng"},
+        "ZLIBNG_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/zlib-ng/zlib-ng/archive/refs/tags"},
+        "ZLIBNG_TGZ_NAME": {"type": "STRING", "value": "2.1.6.tar.gz"},
         "LIBAEC_PACKAGE_NAME": {"type": "STRING", "value": "libaec"},
-        "LIBAEC_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/MathisRosenhauer/libaec/releases/download/v1.0.6"},
-        "LIBAEC_TGZ_NAME": {"type": "STRING", "value": "libaec-1.0.6.tar.gz"}
+        "LIBAEC_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/MathisRosenhauer/libaec/releases/download/v1.1.3"},
+        "LIBAEC_TGZ_NAME": {"type": "STRING", "value": "libaec-1.1.3.tar.gz"}
       }
     },
     {
@@ -31,21 +34,27 @@
       "inherits": ["ci-base-tgz", "ci-CompressionVars"],
       "cacheVariables": {
         "HDF5_PACKAGE_EXTLIBS": "ON",
+        "HDF5_USE_ZLIB_NG": "OFF",
         "ZLIB_USE_LOCALCONTENT": "OFF",
-        "LIBAEC_USE_LOCALCONTENT": "OFF"
+        "LIBAEC_USE_LOCALCONTENT": "OFF",
+        "HDF5_USE_ZLIB_STATIC": "ON",
+        "HDF5_USE_LIBAEC_STATIC": "ON"
       }
     },
     {
       "name": "ci-base-plugins",
       "hidden": true,
       "cacheVariables": {
-        "PLUGIN_TGZ_NAME": {"type": "STRING", "value": "hdf5_plugins-1.14.4.tar.gz"},
         "BSHUF_TGZ_NAME": {"type": "STRING", "value": "bitshuffle-0.5.1.tar.gz"},
         "BSHUF_PACKAGE_NAME": {"type": "STRING", "value": "bshuf"},
         "BLOSC_TGZ_NAME": {"type": "STRING", "value": "c-blosc-1.21.5.tar.gz"},
         "BLOSC_PACKAGE_NAME": {"type": "STRING", "value": "blosc"},
         "BLOSC_ZLIB_TGZ_NAME": {"type": "STRING", "value": "zlib-1.3.tar.gz"},
         "BLOSC_ZLIB_PACKAGE_NAME": {"type": "STRING", "value": "zlib"},
+        "BLOSC2_TGZ_NAME": {"type": "STRING", "value": "c-blosc2-2.14.4.tar.gz"},
+        "BLOSC2_PACKAGE_NAME": {"type": "STRING", "value": "blosc2"},
+        "BLOSC2_ZLIB_TGZ_NAME": {"type": "STRING", "value": "zlib-1.3.tar.gz"},
+        "BLOSC2_ZLIB_PACKAGE_NAME": {"type": "STRING", "value": "zlib"},
         "BZ2_TGZ_NAME": {"type": "STRING", "value": "bzip2-bzip2-1.0.8.tar.gz"},
         "BZ2_PACKAGE_NAME": {"type": "STRING", "value": "bz2"},
         "FPZIP_TGZ_NAME": {"type": "STRING", "value": "fpzip-1.3.0.tar.gz"},
@@ -72,8 +81,8 @@
         "HDF5_ENABLE_PLUGIN_SUPPORT": "ON",
         "H5PL_ALLOW_EXTERNAL_SUPPORT": {"type": "STRING", "value": "TGZ"},
         "PLUGIN_PACKAGE_NAME": {"type": "STRING", "value": "pl"},
-        "PLUGIN_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/HDFGroup/hdf5_plugins/releases/download/hdf5-1.14.4"},
-        "PLUGIN_TGZ_NAME": {"type": "STRING", "value": "hdf5_plugins-1.14.4.tar.gz"}
+        "PLUGIN_TGZ_ORIGPATH": {"type": "STRING", "value": "https://github.com/HDFGroup/hdf5_plugins/releases/download/snapshot-1.14"},
+        "PLUGIN_TGZ_NAME": {"type": "STRING", "value": "hdf5_plugins-1.14.tar.gz"}
       }
     },
     {
@@ -147,6 +156,26 @@
       ]
     },
     {
+      "name": "ci-StdShar-macos-Clang",
+      "description": "Clang Standard Config for macos (Release)",
+      "inherits": [
+        "ci-macos-Release-Clang",
+        "ci-CPP",
+        "ci-Java",
+        "ci-StdShar"
+      ]
+    },
+    {
+      "name": "ci-StdShar-macos-GNUC",
+      "description": "GNUC Standard Config for macos (Release)",
+      "inherits": [
+        "ci-macos-Release-GNUC",
+        "ci-CPP",
+        "ci-Java",
+        "ci-StdShar"
+      ]
+    },
+    {
       "name": "ci-StdShar-GNUC",
       "description": "GNUC Standard Config for x64 (Release)",
       "inherits": [
@@ -192,6 +221,23 @@
       "configurePreset": "ci-StdShar-Clang",
       "inherits": [
         "ci-x64-Release-Clang"
+      ]
+    },
+    {
+      "name": "ci-StdShar-macos-Clang",
+      "description": "Clang Standard Build for macos (Release)",
+      "configurePreset": "ci-StdShar-macos-Clang",
+      "inherits": [
+        "ci-macos-Release-Clang"
+      ]
+    },
+    {
+      "name": "ci-StdShar-macos-GNUC",
+      "description": "GNUC Standard Build for macos (Release)",
+      "configurePreset": "ci-StdShar-macos-GNUC",
+      "verbose": true,
+      "inherits": [
+        "ci-macos-Release-GNUC"
       ]
     },
     {
@@ -243,21 +289,23 @@
       ]
     },
     {
-      "name": "ci-StdShar-OSX-Clang",
-      "configurePreset": "ci-StdShar-Clang",
+      "name": "ci-StdShar-macos-Clang",
+      "configurePreset": "ci-StdShar-macos-Clang",
       "inherits": [
-        "ci-x64-Release-Clang"
+        "ci-macos-Release-Clang"
       ],
       "execution": {
         "noTestsAction": "error",
         "timeout": 180,
         "jobs": 2
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Darwin"
       }
+    },
+    {
+      "name": "ci-StdShar-macos-GNUC",
+      "configurePreset": "ci-StdShar-macos-GNUC",
+      "inherits": [
+        "ci-macos-Release-GNUC"
+      ]
     },
     {
       "name": "ci-StdShar-GNUC",
@@ -310,6 +358,16 @@
       "inherits": "ci-x64-Release-Clang"
     },
     {
+      "name": "ci-StdShar-macos-Clang",
+      "configurePreset": "ci-StdShar-macos-Clang",
+      "inherits": "ci-macos-Release-Clang"
+    },
+    {
+      "name": "ci-StdShar-macos-GNUC",
+      "configurePreset": "ci-StdShar-macos-GNUC",
+      "inherits": "ci-macos-Release-GNUC"
+    },
+    {
       "name": "ci-StdShar-GNUC",
       "configurePreset": "ci-StdShar-GNUC",
       "inherits": "ci-x64-Release-GNUC"
@@ -345,12 +403,12 @@
       ]
     },
     {
-      "name": "ci-StdShar-OSX-Clang",
+      "name": "ci-StdShar-macos-Clang",
       "steps": [
-        {"type": "configure", "name": "ci-StdShar-Clang"},
-        {"type": "build", "name": "ci-StdShar-Clang"},
-        {"type": "test", "name": "ci-StdShar-OSX-Clang"},
-        {"type": "package", "name": "ci-StdShar-Clang"}
+        {"type": "configure", "name": "ci-StdShar-macos-Clang"},
+        {"type": "build", "name": "ci-StdShar-macos-Clang"},
+        {"type": "test", "name": "ci-StdShar-macos-Clang"},
+        {"type": "package", "name": "ci-StdShar-macos-Clang"}
       ]
     },
     {
@@ -360,6 +418,15 @@
         {"type": "build", "name": "ci-StdShar-GNUC"},
         {"type": "test", "name": "ci-StdShar-GNUC"},
         {"type": "package", "name": "ci-StdShar-GNUC"}
+      ]
+    },
+    {
+      "name": "ci-StdShar-macos-GNUC",
+      "steps": [
+        {"type": "configure", "name": "ci-StdShar-macos-GNUC"},
+        {"type": "build", "name": "ci-StdShar-macos-GNUC"},
+        {"type": "test", "name": "ci-StdShar-macos-GNUC"},
+        {"type": "package", "name": "ci-StdShar-macos-GNUC"}
       ]
     },
     {

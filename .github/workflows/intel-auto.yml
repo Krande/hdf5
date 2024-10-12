@@ -1,5 +1,6 @@
 name: hdf5 1.14 autotools icx CI
 
+# Triggers the workflow on a call from another workflow
 on:
   workflow_call:
     inputs:
@@ -17,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get Sources
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.7
 
       - name: Install Dependencies
         shell: bash
@@ -30,7 +31,7 @@ jobs:
         id: setup-fortran
         with:
           compiler: intel
-          version: '2024.0'
+          version: '2024.1'
 
       - name: Autotools Configure
         shell: bash
@@ -45,7 +46,8 @@ jobs:
           $GITHUB_WORKSPACE/configure \
             --enable-build-mode=${{ inputs.build_mode }} \
             --enable-shared \
-            --disable-fortran
+            --enable-cxx \
+            --enable-fortran
 
       - name: Autotools Build
         shell: bash

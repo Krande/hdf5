@@ -280,7 +280,6 @@ CCDEPMODE = @CCDEPMODE@
 CC_VERSION = @CC_VERSION@
 CFLAGS = @CFLAGS@
 CLANG_SANITIZE_CHECKS = @CLANG_SANITIZE_CHECKS@
-CODESTACK = @CODESTACK@
 CONFIG_DATE = @CONFIG_DATE@
 CONFIG_MODE = @CONFIG_MODE@
 CONFIG_USER = @CONFIG_USER@
@@ -450,7 +449,6 @@ LL_PATH = @LL_PATH@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 LT_STATIC_EXEC = @LT_STATIC_EXEC@
-LT_SYS_LIBRARY_PATH = @LT_SYS_LIBRARY_PATH@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
@@ -1121,9 +1119,6 @@ clean:
 	rm -rf $(JAVAROOT)/*
 	rm -f $(jarfile)
 	rm -f classhdf5_java.stamp
-
-# Clean examples when check-clean is invoked
-check-clean :: ;
 
 #include $(top_srcdir)/config/conclude.am
 

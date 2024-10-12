@@ -90,14 +90,14 @@
 /* Define if the __attribute__(()) extension is present */
 #undef HAVE_ATTRIBUTE
 
+/* Define if supports __builtin_expect() extension */
+#undef HAVE_BUILTIN_EXPECT
+
 /* Define to 1 if you have the `clock_gettime' function. */
 #undef HAVE_CLOCK_GETTIME
 
 /* Define if has CLOCK_MONOTONIC_COARSE */
 #undef HAVE_CLOCK_MONOTONIC_COARSE
-
-/* Define if the function stack tracing code is to be compiled in */
-#undef HAVE_CODESTACK
 
 /* Define to 1 if you have the <curl/curl.h> header file. */
 #undef HAVE_CURL_CURL_H
@@ -135,7 +135,7 @@
 /* Define if support for szip filter is enabled */
 #undef HAVE_FILTER_SZIP
 
-/* Determine if __float128 is available */
+/* Determine if __float128 will be used in the Fortran wrappers */
 #undef HAVE_FLOAT128
 
 /* Define to 1 if you have the `flock' function. */
@@ -268,9 +268,6 @@
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
-
-/* Define to 1 if you have the <quadmath.h> header file. */
-#undef HAVE_QUADMATH_H
 
 /* Define to 1 if you have the `random' function. */
 #undef HAVE_RANDOM
@@ -422,7 +419,8 @@
    with special algorithm. */
 #undef LONG_TO_LDOUBLE_SPECIAL
 
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
 #undef LT_OBJDIR
 
 /* Define MPI Fortran KIND of LOGICAL */
@@ -581,12 +579,6 @@
 
 /* The size of `_Float16', as computed by sizeof. */
 #undef SIZEOF__FLOAT16
-
-/* The size of `_Quad', as computed by sizeof. */
-#undef SIZEOF__QUAD
-
-/* The size of `__float128', as computed by sizeof. */
-#undef SIZEOF___FLOAT128
 
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for

@@ -214,7 +214,7 @@ extern "C" {
  * \lcpl_id
  * \mcpl_id
  * \mapl_id
- * \returns \hid_t{map object}
+ * \return \hid_t{map object}
  *
  * \details H5Mcreate() creates a new map object for storing key-value
  *          pairs. The in-file datatype for keys is defined by \p key_type_id
@@ -245,9 +245,27 @@ H5_DLL hid_t  H5Mcreate_async(hid_t loc_id, const char *name, hid_t key_type_id,
 /**
  * \ingroup H5M
  *
- * \brief
+ * \brief Creates a map object without linking it into a file
  *
- * \details
+ * \fgdta_loc_id
+ * \type_id{key_type_id}
+ * \type_id{val_type_id}
+ * \mcpl_id
+ * \mapl_id
+ * \return \hid_t{map object}
+ *          The resulting ID should be linked into the file with H5Olink or it
+ *          will be deleted when closed.
+ *
+ * \details H5Mcreate_anon() creates a new map object for storing key-value
+ *          pairs. The in-file datatype for keys is defined by \p key_type_id
+ *          and the in-file datatype for values is defined by \p val_type_id. \p
+ *          loc_id specifies the file to create the map object, but no link to
+ *          the object is created.  Other options can be specified through the
+ *          property lists \p mcpl_id and \p mapl_id.
+ *
+ *          The new map should be linked into the group hierarchy before being
+ *          closed or it will be deleted. The map should be closed when the
+ *          caller no longer requires it.
  *
  * \since 1.12.0
  *
@@ -262,7 +280,7 @@ H5_DLL hid_t H5Mcreate_anon(hid_t loc_id, hid_t key_type_id, hid_t val_type_id, 
  * \fgdta_loc_id{loc_id}
  * \param[in] name Map object name relative to \p loc_id
  * \mapl_id
- * \returns \hid_t{map object}
+ * \return \hid_t{map object}
  *
  * \details H5Mopen() finds a map object specified by \p name under the location
  *          specified by \p loc_id. The map object should be close with
@@ -291,7 +309,7 @@ H5_DLL hid_t  H5Mopen_async(hid_t loc_id, const char *name, hid_t mapl_id, hid_t
  * \brief Terminates access to a map object
  *
  * \map_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mclose() closes access to a map object specified by \p map_id and
  *          releases resources used by it.
@@ -321,7 +339,7 @@ H5_DLL herr_t H5Mclose_async(hid_t map_id, hid_t es_id);
  * \brief Gets key datatype for a map object
  *
  * \map_id
- * \returns \hid_t{datatype}
+ * \return \hid_t{datatype}
  *
  * \details H5Mget_key_type() retrieves key datatype as stored in the file for a
  *          map object specified by \p map_id and returns identifier for the
@@ -338,7 +356,7 @@ H5_DLL hid_t H5Mget_key_type(hid_t map_id);
  * \brief Gets value datatype for a map object
  *
  * \map_id
- * \returns \hid_t{datatype}
+ * \return \hid_t{datatype}
  *
  * \details H5Mget_val_type() retrieves value datatype as stored in the file for
  *          a map object specified by \p map_id and returns identifier for the
@@ -355,7 +373,7 @@ H5_DLL hid_t H5Mget_val_type(hid_t map_id);
  * \brief Gets creation property list for a map object
  *
  * \map_id
- * \returns \hid_t{map creation property list}
+ * \return \hid_t{map creation property list}
  *
  * \details H5Mget_create_plist() returns an identifier for a copy of the
  *          creation property list for a map object specified by \p map_id.
@@ -374,7 +392,7 @@ H5_DLL hid_t H5Mget_create_plist(hid_t map_id);
  * \brief Gets access property list for a map object
  *
  * \map_id
- * \returns \hid_t{map access property list}
+ * \return \hid_t{map access property list}
  *
  * \details H5Mget_access_plist() returns an identifier for a copy of the access
  *          property list for a map object specified by \p map_id.
@@ -392,7 +410,7 @@ H5_DLL hid_t H5Mget_access_plist(hid_t map_id);
  * \map_id
  * \param[out] count The number of key-value pairs stored in the map object
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mget_count() retrieves the number of key-value pairs stored in a
  *          map specified by map_id.
@@ -413,7 +431,7 @@ H5_DLL herr_t H5Mget_count(hid_t map_id, hsize_t *count, hid_t dxpl_id);
  * \type_id{val_mem_type_id}
  * \param[in] value Pointer to value buffer
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mput() adds a key-value pair to a map object specified by \p
  *          map_id, or updates the value for the specified key if one was set
@@ -457,7 +475,7 @@ H5_DLL herr_t H5Mput_async(hid_t map_id, hid_t key_mem_type_id, const void *key,
  * \type_id{val_mem_type_id}
  * \param[out] value Pointer to value buffer
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mget() retrieves from a map object specified by \p map_id, the
  *          value associated with the provided key \p key. \p key_mem_type_id
@@ -502,7 +520,7 @@ H5_DLL herr_t H5Mget_async(hid_t map_id, hid_t key_mem_type_id, const void *key,
  * \param[in] key Pointer to key buffer
  * \param[out] exists Pointer to a buffer to return the existence status
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mexists() checks if the provided key is stored in the map object
  *          specified by \p map_id. If \p key_mem_type_id is different from that
@@ -528,7 +546,7 @@ H5_DLL herr_t H5Mexists(hid_t map_id, hid_t key_mem_type_id, const void *key, hb
  * \param[in] op User-defined iterator function
  * \op_data
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Miterate() iterates over all key-value pairs stored in the map
  *          object specified by \p map_id, making the callback specified by \p
@@ -572,7 +590,7 @@ H5_DLL herr_t H5Miterate(hid_t map_id, hsize_t *idx, hid_t key_mem_type_id, H5M_
  * \op_data
  * \dxpl_id
  * \lapl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Miterate_by_name() iterates over all key-value pairs stored in the
  *          map object specified by \p map_id, making the callback specified by
@@ -612,7 +630,7 @@ H5_DLL herr_t H5Miterate_by_name(hid_t loc_id, const char *map_name, hsize_t *id
  * \type_id{key_mem_type_id}
  * \param[in] key Pointer to key buffer
  * \dxpl_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Mdelete() deletes a key-value pair from the map object specified
  *          by \p map_id. \p key_mem_type_id specifies the datatype for the

@@ -61,7 +61,7 @@ void accum_printf(const H5F_t *f);
 #define accum_read(a, s, b)  H5F_block_read(f, H5FD_MEM_DEFAULT, (haddr_t)(a), (size_t)(s), (b))
 #define accum_free(f, a, s)  H5F__accum_free(f->shared, H5FD_MEM_DEFAULT, (haddr_t)(a), (hsize_t)(s))
 #define accum_flush(f)       H5F__accum_flush(f->shared)
-#define accum_reset(f)       H5F__accum_reset(f->shared, true)
+#define accum_reset(f)       H5F__accum_reset(f->shared, true, false)
 
 /* ================= */
 /* Main Test Routine */
@@ -91,7 +91,7 @@ main(void)
     puts("Testing the metadata accumulator");
 
     /* File access property list */
-    h5_reset();
+    h5_test_init();
     if ((fapl = h5_fileaccess()) < 0)
         FAIL_STACK_ERROR;
     h5_fixname(FILENAME[0], fapl, filename, sizeof filename);
@@ -1920,7 +1920,7 @@ test_random_write(H5F_t *f)
     TESTING("random writes to accumulator");
 
     /* Choose random # seed */
-    seed = (unsigned)HDtime(NULL);
+    seed = (unsigned)time(NULL);
 #if 0
 /* seed = (unsigned)1155438845; */
 fprintf(stderr, "Random # seed was: %u\n", seed);

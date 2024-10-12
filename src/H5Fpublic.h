@@ -873,7 +873,7 @@ H5_DLL herr_t H5Fget_vfd_handle(hid_t file_id, hid_t fapl, void **file_handle);
  *
  * \brief Mounts an HDF5 file
  *
- * \loc_id{loc}
+ * \fg_loc_id{loc_id}
  * \param[in] name Name of the group onto which the file specified by \p child
  *                 is to be mounted
  * \file_id{child}
@@ -897,13 +897,13 @@ H5_DLL herr_t H5Fget_vfd_handle(hid_t file_id, hid_t fapl, void **file_handle);
  * \since 1.0.0
  *
  */
-H5_DLL herr_t H5Fmount(hid_t loc, const char *name, hid_t child, hid_t plist);
+H5_DLL herr_t H5Fmount(hid_t loc_id, const char *name, hid_t child, hid_t plist);
 /**
  * \ingroup H5F
  *
- * \brief Unounts an HDF5 file
+ * \brief Un-mounts an HDF5 file
  *
- * \loc_id{loc}
+ * \fg_loc_id{loc_id}
  * \param[in] name Name of the mount point
  *
  * \return \herr_t
@@ -921,7 +921,7 @@ H5_DLL herr_t H5Fmount(hid_t loc, const char *name, hid_t child, hid_t plist);
  * \since 1.0.0
  *
  */
-H5_DLL herr_t H5Funmount(hid_t loc, const char *name);
+H5_DLL herr_t H5Funmount(hid_t loc_id, const char *name);
 /**
  * \ingroup H5F
  *
@@ -1112,7 +1112,7 @@ H5_DLL herr_t H5Fset_mdc_config(hid_t file_id, const H5AC_cache_config_t *config
  * \return \herr_t
  *
  * \details H5Fget_mdc_hit_rate() queries the metadata cache of the target file to obtain its hit rate
- *          \Code{(cache hits / (cache hits + cache misses))} since the last time hit rate statistics
+ *          \TText{(cache hits / (cache hits + cache misses))} since the last time hit rate statistics
  *          were reset. If the cache has not been accessed since the last time the hit rate stats were
  *          reset, the hit rate is defined to be 0.0.
  *
@@ -1141,7 +1141,7 @@ H5_DLL herr_t H5Fget_mdc_hit_rate(hid_t file_id, double *hit_rate_ptr);
  *                          or NULL if that datum is not desired
  * \param[out] cur_num_entries_ptr Pointer to the location in which the current number of entries in
  *                                 the cache is to be returned, or NULL if that datum is not desired
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Fget_mdc_size()  queries the metadata cache of the target file for the desired size
  *          information, and returns this information in the locations indicated by the pointer
@@ -1167,7 +1167,7 @@ H5_DLL herr_t H5Fget_mdc_size(hid_t file_id, size_t *max_size_ptr, size_t *min_c
  * \brief Resets hit rate statistics counters for the target file
  *
  * \file_id
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details
  * \parblock
@@ -1198,7 +1198,9 @@ H5_DLL herr_t H5Freset_mdc_hit_rate_stats(hid_t file_id);
  *
  * \obj_id
  * \param[out] name Buffer for the file name
- * \param[in] size Size, in bytes, of the \p name buffer
+ * \param[in]  size The size, in bytes, of the \p name buffer. Must be the
+ *                  size of the file name in bytes plus 1 for a NULL
+ *                  terminator
  *
  * \return Returns the length of the file name if successful; otherwise returns
  *         a negative value.
@@ -1211,17 +1213,7 @@ H5_DLL herr_t H5Freset_mdc_hit_rate_stats(hid_t file_id);
  *          additional characters, if any, are not returned to the user
  *          application.
  *
- *          If the length of the name, which determines the required value of
- *          size, is unknown, a preliminary H5Fget_name() call can be made by
- *          setting \p name to NULL. The return value of this call will be the
- *          size of the file name; that value plus one (1) can then be assigned
- *          to size for a second H5Fget_name() call, which will retrieve the
- *          actual name. (The value passed in with the parameter \p size must
- *          be one greater than size in bytes of the actual name in order to
- *          accommodate the null terminator; if \p size is set to the exact
- *          size of the name, the last byte passed back will contain the null
- *          terminator and the last character will be missing from the name
- *          passed back to the calling application.)
+ *          \details_namelen{file,H5Fget_name}
  *
  *          If an error occurs, the buffer pointed to by \p name is unchanged
  *          and the function returns a negative value.
@@ -1300,22 +1292,22 @@ H5_DLL herr_t H5Fget_info2(hid_t obj_id, H5F_info2_t *file_info);
  *          library and logarithmic base 10.
  *
  *          If read retries are incurred for a metadata entry \c i, the library will
- *          allocate memory for \Code{retries[i] (nbins * sizeof(uint32_t)} and store
+ *          allocate memory for \TText{retries[i] (nbins * sizeof(uint32_t)} and store
  *          the collection of retries there. If there are no retries for a metadata entry
- *          \c i, \Code{retries[i]} will be NULL. After a call to this routine, users should
- *          free each \Code{retries[i]} that is non-NULL, otherwise resource leak will occur.
+ *          \c i, \TText{retries[i]} will be NULL. After a call to this routine, users should
+ *          free each \TText{retries[i]} that is non-NULL, otherwise resource leak will occur.
  *
  *          For the library default read attempts of 100 for SWMR access, nbins will be 2
  *          as depicted below:
- *          \li \Code{retries[i][0]} is the number of 1 to 9 read retries.
- *          \li \Code{retries[i][1]} is the number of 10 to 99 read retries.
+ *          \li \TText{retries[i][0]} is the number of 1 to 9 read retries.
+ *          \li \TText{retries[i][1]} is the number of 10 to 99 read retries.
  *          For the library default read attempts of 1 for non-SWMR access, \c nbins will
- *          be 0 and each \Code{retries[i]} will be NULL.
+ *          be 0 and each \TText{retries[i]} will be NULL.
  *
- *          The following table lists the 21 metadata entries of \Code{retries[]}:
+ *          The following table lists the 21 metadata entries of \TText{retries[]}:
  *          <table>
  *          <tr>
- *          <th>Index for \Code{retries[]}</th>
+ *          <th>Index for \TText{retries[]}</th>
  *          <th>Metadata entries<sup>*</sup></th>
  *          </tr>
  *          <tr><td>0</td><td>Object header (version 2)</td></tr>
@@ -1682,7 +1674,7 @@ H5_DLL herr_t H5Fget_page_buffering_stats(hid_t file_id, unsigned accesses[2], u
  * \file_id
  * \param[out] image_addr Offset of the cache image if it exists, or #HADDR_UNDEF if it does not
  * \param[out] image_size Length of the cache image if it exists, or 0 if it does not
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details
  * \parblock
@@ -1770,7 +1762,7 @@ H5_DLL herr_t H5Fset_dset_no_attrs_hint(hid_t file_id, hbool_t minimize);
  * \param[in] flag Logical flag for atomicity setting. Valid values are:
  *                 \li \c 1 -- Sets MPI file access to atomic mode.
  *                 \li \c 0 -- Sets MPI file access to nonatomic mode.
- * \returns \herr_t
+ * \return \herr_t
  *
  * \par Motivation
  * H5Fset_mpi_atomicity() is applicable only in parallel environments using MPI I/O.
@@ -1791,20 +1783,20 @@ H5_DLL herr_t H5Fset_dset_no_attrs_hint(hid_t file_id, hbool_t minimize);
  * pass the same values for \p file_id and \p flag.
  *
  * This function is available only when the HDF5 library is configured with parallel support
- * (\Code{--enable-parallel | HDF5_ENABLE_PARALLEL}). It is useful only when used with the #H5FD_MPIO driver
+ * (\TText{--enable-parallel | HDF5_ENABLE_PARALLEL}). It is useful only when used with the #H5FD_MPIO driver
  * (see H5Pset_fapl_mpio()).
  * \endparblock
  *
  * \attention
  * \parblock
- * H5Fset_mpi_atomicity() calls \Code{MPI_File_set_atomicity} underneath and is not supported
- * if the execution platform does not support \Code{MPI_File_set_atomicity}. When it is
+ * H5Fset_mpi_atomicity() calls \TText{MPI_File_set_atomicity} underneath and is not supported
+ * if the execution platform does not support \TText{MPI_File_set_atomicity}. When it is
  * supported and used, the performance of data access operations may drop significantly.
  *
- * In certain scenarios, even when \Code{MPI_File_set_atomicity} is supported, setting
+ * In certain scenarios, even when \TText{MPI_File_set_atomicity} is supported, setting
  * atomicity with H5Fset_mpi_atomicity() and \p flag set to 1 does not always yield
  * strictly atomic updates. For example, some H5Dwrite() calls translate to multiple
- * \Code{MPI_File_write_at} calls. This happens in all cases where the high-level file
+ * \TText{MPI_File_write_at} calls. This happens in all cases where the high-level file
  * access routine translates to multiple lower level file access routines.
  * The following scenarios will raise this issue:
  * \li Non-contiguous file access using independent I/O
@@ -1835,7 +1827,7 @@ H5_DLL herr_t H5Fset_mpi_atomicity(hid_t file_id, hbool_t flag);
  * \param[out] flag Logical flag for atomicity setting. Valid values are:
  *                  \li 1 -- MPI file access is set to atomic mode.
  *                  \li 0 -- MPI file access is set to nonatomic mode.
- * \returns \herr_t
+ * \return \herr_t
  *
  * \details H5Fget_mpi_atomicity() retrieves the current consistency semantics mode for
  *          data access for the file \p file_id.
@@ -1955,10 +1947,8 @@ H5_DLL herr_t H5Fget_info1(hid_t obj_id, H5F_info1_t *file_info);
  *
  * \return \herr_t
  *
- * \deprecated When?
- *
- * \todo In which version was this function introduced?
- * \todo In which version was this function deprecated?
+ * \since 1.10.1
+ * \deprecated 1.10.2 Deprecated in favor of the function H5Fset_libver_bounds()
  *
  */
 H5_DLL herr_t H5Fset_latest_format(hid_t file_id, hbool_t latest_format);
@@ -1971,12 +1961,10 @@ H5_DLL herr_t H5Fset_latest_format(hid_t file_id, hbool_t latest_format);
  *
  * \return \htri_t
  *
- * \deprecated When?
- *
  * \details H5Fis_hdf5() determines whether a file is in the HDF5 format.
  *
- * \todo In which version was this function deprecated?
- * \todo In which version was this function introduced?
+ * \since 1.0.0
+ * \deprecated 1.12.0 Deprecated in favor of the function H5Fis_accessible()
  *
  */
 H5_DLL htri_t H5Fis_hdf5(const char *file_name);

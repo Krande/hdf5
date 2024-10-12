@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.18)
 project (HDF5Examples_C_H5FLT C)
 
 set (dyn_examples)
@@ -20,6 +20,14 @@ if (ENABLE_BLOSC)
   else ()
     set (BLOSC_AVAILABLE 0)
   endif ()
+else ()
+  set (BLOSC_AVAILABLE 0)
+endif ()
+
+option (ENABLE_BLOSC2 "Enable Library Building for blosc2 plugin" ON)
+if (ENABLE_BLOSC2)
+  set (BLOSC_AVAILABLE 1)
+  set (dyn_examples ${dyn_examples} h5ex_d_blosc2)
 else ()
   set (BLOSC_AVAILABLE 0)
 endif ()
@@ -157,7 +165,6 @@ foreach (example ${dyn_examples})
           "$<$<BOOL:${${EXAMPLE_VARNAME}_USE_110_API}>:-DH5_USE_110_API>"
           "$<$<BOOL:${${EXAMPLE_VARNAME}_USE_112_API}>:-DH5_USE_112_API>"
           "$<$<BOOL:${${EXAMPLE_VARNAME}_USE_114_API}>:-DH5_USE_114_API>"
-          "$<$<BOOL:${${EXAMPLE_VARNAME}_USE_116_API}>:-DH5_USE_116_API>"
   )
   if (H5_HAVE_PARALLEL)
     target_include_directories (${EXAMPLE_VARNAME}_${example} PUBLIC ${MPI_C_INCLUDE_DIRS})
@@ -188,6 +195,7 @@ if (H5EX_BUILD_TESTING)
       add_test (
           NAME ${EXAMPLE_VARNAME}_${testname}-ERR
           COMMAND "${CMAKE_COMMAND}"
+              -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
               -D "TEST_PROGRAM=$<TARGET_FILE:${EXAMPLE_VARNAME}_${testname}>"
               -D "TEST_ARGS:STRING=${ARGN}"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
@@ -215,6 +223,7 @@ if (H5EX_BUILD_TESTING)
       add_test (
           NAME ${EXAMPLE_VARNAME}_${testname}
           COMMAND "${CMAKE_COMMAND}"
+              -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
               -D "TEST_PROGRAM=$<TARGET_FILE:${EXAMPLE_VARNAME}_${testname}>"
               -D "TEST_ARGS:STRING=${ARGN}"
               -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
@@ -234,7 +243,8 @@ if (H5EX_BUILD_TESTING)
         add_test (
             NAME ${EXAMPLE_VARNAME}_H5DUMP-${testname}
             COMMAND "${CMAKE_COMMAND}"
-               -D "TEST_PROGRAM=${H5EX_HDF5_DUMP_EXECUTABLE}"
+                -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
+                -D "TEST_PROGRAM=${H5EX_HDF5_DUMP_EXECUTABLE}"
                 -D "TEST_ARGS:STRING=--enable-error-stack;-p;${testname}.h5"
                 -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
                 -D "TEST_OUTPUT=${testname}.ddl.out"
@@ -251,6 +261,7 @@ if (H5EX_BUILD_TESTING)
         add_test (
             NAME ${EXAMPLE_VARNAME}_H5DUMP-${testname}
             COMMAND "${CMAKE_COMMAND}"
+                -D "TEST_EMULATOR=${CMAKE_CROSSCOMPILING_EMULATOR}"
                 -D "TEST_PROGRAM=${H5EX_HDF5_DUMP_EXECUTABLE}"
                 -D "TEST_ARGS:STRING=--enable-error-stack;-p;${testname}.h5"
                 -D "TEST_FOLDER=${PROJECT_BINARY_DIR}"
@@ -287,11 +298,13 @@ if (H5EX_BUILD_TESTING)
   add_custom_target(${EXAMPLE_VARNAME}_example_files ALL COMMENT "Copying files needed by example tests" DEPENDS ${example_files_list})
 
   foreach (h5_file ${dyn_examples})
-    if (${h5_file} MATCHES "h5ex_d_zfp")
-      ## special filter
-      ADD_H5_TEST (h5ex_d_zfp FILTERALL)
-    else ()
-      ADD_H5_TEST (${h5_file})
+    if (NOT HDF5_ENABLE_USING_MEMCHECKER)
+      if (${h5_file} MATCHES "h5ex_d_zfp")
+        ## special filter
+        ADD_H5_TEST (h5ex_d_zfp FILTERALL)
+      else ()
+        ADD_H5_TEST (${h5_file})
+      endif ()
     endif ()
   endforeach ()
 

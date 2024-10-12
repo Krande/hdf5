@@ -37,8 +37,8 @@ cmake_minimum_required (VERSION 3.18)
 #     CTEST_SOURCE_NAME  -  source folder
 ##############################################################################
 
-set (CTEST_SOURCE_VERSION "1.14.4")
-set (CTEST_SOURCE_VERSEXT "-3")
+set (CTEST_SOURCE_VERSION "1.14.5")
+set (CTEST_SOURCE_VERSEXT "")
 
 ##############################################################################
 # handle input parameters to script.
@@ -178,7 +178,9 @@ if (NOT DEFINED HPC)
       message (FATAL_ERROR "Invalid BUILD_GENERATOR must be - Unix, VS2022, VS202264, VS2019, VS201964")
     endif ()
   ##  Set the following to unique id your computer  ##
-    set (CTEST_SITE "WIN10${BUILD_GENERATOR}.XXXX")
+    if(NOT DEFINED CTEST_SITE)
+      set (CTEST_SITE "WIN10${BUILD_GENERATOR}-${CTEST_SITE_EXT}")
+    endif()
   else ()
     if (MINGW)
       set (CTEST_CMAKE_GENERATOR "MinGW Makefiles")
@@ -187,9 +189,13 @@ if (NOT DEFINED HPC)
     endif ()
   ##  Set the following to unique id your computer  ##
     if (APPLE)
-      set (CTEST_SITE "MAC.XXXX")
+      if(NOT DEFINED CTEST_SITE)
+        set (CTEST_SITE "MAC-${CTEST_SITE_EXT}")
+      endif()
     else ()
-      set (CTEST_SITE "LINUX.XXXX")
+      if(NOT DEFINED CTEST_SITE)
+        set (CTEST_SITE "LINUX-${CTEST_SITE_EXT}")
+      endif()
     endif ()
     if (APPLE)
       execute_process (COMMAND xcrun --find cc OUTPUT_VARIABLE XCODE_CC OUTPUT_STRIP_TRAILING_WHITESPACE)

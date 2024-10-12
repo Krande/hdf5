@@ -615,7 +615,7 @@ size1_helper(hid_t file, const char *filename, hid_t fapl_id, bool test_file_clo
     /* Closing and re-opening the file takes a long time on systems without
      * local disks.  Don't close and reopen if express testing is enabled.
      */
-    if (GetTestExpress() > 1)
+    if (TestExpress > 1)
         test_file_closing = false;
 
     /* Initialize wdata */
@@ -1553,7 +1553,7 @@ size2_helper(hid_t fcpl_id, int test_file_closing, size2_helper_struct *ret_size
     /* Closing and re-opening the file takes a long time on systems without
      * local disks.  Don't close and reopen if express testing is enabled.
      */
-    if (GetTestExpress() > 1)
+    if (TestExpress > 1)
         test_file_closing = 0;
 
     /* Create a file and get its size */
@@ -2422,7 +2422,7 @@ test_sohm_size2(int close_reopen)
         (list_index_small.attrs1 - list_index_small.interleaved))
         VERIFY(0, 1, "h5_get_file_size");
 
-    /* Give it some overhead (for checkin to move messages into continuation message) */
+    /* Give it some overhead (for commit to move messages into continuation message) */
     if ((list_index_small.attrs1 - list_index_small.interleaved) >
         (h5_stat_size_t)((float)(btree_index.attrs1 - btree_index.interleaved) * OVERHEAD_ALLOWED))
         VERIFY(0, 1, "h5_get_file_size");

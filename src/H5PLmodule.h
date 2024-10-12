@@ -26,7 +26,7 @@
 #define H5_MY_PKG     H5PL
 #define H5_MY_PKG_ERR H5E_PLUGIN
 
-/** \page H5PL_UG The HDF5 Plugins
+/** \page H5PL_UG HDF5 Plugins
  *
  * \section sec_filter_plugins HDF5 Filter Plugins
  *
@@ -162,7 +162,7 @@
  *
  * \subsubsection subsubsec_filter_plugins_prog_write Writing a Filter Function
  * The HDF5 filter function for the dynamically loaded filter feature should be written as any custom filter
- * described in <a href="http://www.hdfgroup.org/HDF5/doc/H5.user/Filters.html">Custom Filters</a>. See the
+ * described in <a href="https://\DOXURL/_f_i_l_t_e_r.html">Custom Filters</a>. See the
  * “Example” section, section 5, of that document to get an idea of the simple filter function, and see the
  * example of the more sophisticated HDF5 bzip2 filter function in the “Building an HDF5 bzip2 Plugin Example”
  * section. The HDF5 bzip2 filter function is also available for download from <a
@@ -276,10 +276,12 @@
  * \endcode
  *
  * See the documentation at
- * <aref="https://github.com/HDFGroup/hdf5_plugins/tree/master/docs">hdf5_plugins/docs</a> folder. In
+ * <a href="https://github.com/HDFGroup/hdf5_plugins/tree/master/docs">hdf5_plugins/docs</a> folder. In
  * particular:
- * <aref="https://github.com/HDFGroup/hdf5_plugins/blob/master/docs/INSTALL_With_CMake.txt">INSTALL_With_CMake</a>
- * <aref="https://github.com/HDFGroup/hdf5_plugins/blob/master/docs/USING_HDF5_AND_CMake.txt">USING_HDF5_AND_CMake</a>
+ * <a
+ * href="https://github.com/HDFGroup/hdf5_plugins/blob/master/docs/INSTALL_With_CMake.txt">INSTALL_With_CMake</a>
+ * <a
+ * href="https://github.com/HDFGroup/hdf5_plugins/blob/master/docs/USING_HDF5_AND_CMake.txt">USING_HDF5_AND_CMake</a>
  */
 
 /**

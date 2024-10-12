@@ -67,16 +67,20 @@
  * The dataset does not have to open to be linked or unlinked.
  *
  * \subsubsection subsubsec_dataset_intro_obj Object Reference
- * A dataset may be the target of an object reference. The object reference is created by
- * #H5Rcreate with the name of an object which may be a dataset and the reference type
+ * A file, group, dataset, named datatype, or attribute may be the target of an object reference.
+ * The object reference is created by
+ * #H5Rcreate_object with the name of an object which may be a dataset and the reference type
  * #H5R_OBJECT. The dataset does not have to be open to create a reference to it.
  *
  * An object reference may also refer to a region (selection) of a dataset. The reference is created
- * with #H5Rcreate and a reference type of #H5R_DATASET_REGION.
+ * with #H5Rcreate_region.
  *
- * An object reference can be accessed by a call to #H5Rdereference. When the reference is to a
- * dataset or dataset region, the #H5Rdereference call returns an identifier to the dataset just as if
+ * An object reference can be accessed by a call to #H5Ropen_object. When the reference is to a
+ * dataset or dataset region, the #H5Ropen_object call returns an identifier to the dataset just as if
  * #H5Dopen has been called.
+ *
+ * The reference buffer from the #H5Rcreate_object call must be released by
+ * using #H5Rdestroy to avoid resource leaks and possible HDF5 library shutdown issues.
  *
  * \subsubsection subsubsec_dataset_intro_attr Adding Attributes
  * A dataset may have user-defined attributes which are created with #H5Acreate and accessed
@@ -883,7 +887,7 @@ filter.</td>
  * It is clear that the internal HDF5 filter mechanism, while extensible, does not work well with third-party
  * filters. It would be a maintenance nightmare to keep adding and supporting new compression methods
  * in HDF5. For any set of HDF5 “internal” filters, there always will be data with which the “internal”
-filters
+ * filters
  * will not achieve the optimal performance needed to address data I/O and storage problems. Thus the
  * internal HDF5 filter mechanism is enhanced to address the issues discussed above.
  *
@@ -897,7 +901,7 @@ filters
  *
  * When an application reads data compressed with a third-party HDF5 filter, the HDF5 Library will search
  * for the required filter plugin, register the filter with the library (if the filter function is not
-registered) and
+ * registered) and
  * apply it to the data on the read operation.
  *
  * For more information,
@@ -1492,7 +1496,7 @@ allocated if necessary.
  * the size of the memory datatype and the number of elements in the memory selection.
  *
  * Variable-length data are organized in two or more areas of memory. For more information,
- * \see \ref h4_vlen_datatype "Variable-length Datatypes".
+ * see \ref h4_vlen_datatype "Variable-length Datatypes".
  *
  * When writing data, the application creates an array of
  * vl_info_t which contains pointers to the elements. The elements might be, for example, strings.
@@ -2731,12 +2735,13 @@ allocated if necessary.
  * See The HDF Group website for further information regarding the SZip filter.
  *
  * \subsubsection subsubsec_dataset_filters_dyn Using Dynamically-Loadable Filters
- * \see \ref sec_filter_plugins for further information regarding the dynamically-loadable filters.
+ * see \ref sec_filter_plugins for further information regarding the dynamically-loadable filters.
  *
  * HDF has a filter plugin repository of useful third-party plugins that can used
  * <table>
  * <tr><th>Filter</th><th>SetFilter Params</th></tr>
  * <tr><td>BLOSC</td><td>UD=32001,0,0</td></tr>
+ * <tr><td>BLOSC2</td><td>UD=32026,0,0</td></tr>
  * <tr><td>BSHUF</td><td>UD=32004,0,0</td></tr>
  * <tr><td>BZIP2</td><td>UD=307,0,1,9</td></tr>
  * <tr><td>JPEG</td><td>UD=32019,0,4,q,c,r,t</td></tr>

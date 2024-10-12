@@ -77,10 +77,10 @@ main(void)
         exit(EXIT_SUCCESS);
     }
 
-    h5_reset();
+    h5_test_init();
 
     /* To exit from the file for SIGABRT signal */
-    if (HDsignal(SIGABRT, catch_signal) == SIG_ERR)
+    if (signal(SIGABRT, catch_signal) == SIG_ERR)
         TEST_ERROR;
 
     fapl = h5_fileaccess();
