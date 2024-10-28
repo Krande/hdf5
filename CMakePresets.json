@@ -209,6 +209,9 @@
       "name": "conda-shared",
       "description": "Conda shared libraries",
       "hidden": true,
+      "warnings": {
+        "dev": false
+      },
       "environment": {
         "ZLIB_INCLUDE_DIR": "$env{LIBRARY_PREFIX}/include",
         "ZLIB_DIR": "$env{LIBRARY_PREFIX}"
@@ -216,6 +219,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
+        "CMAKE_INCLUDE_PATH": "$env{LIBRARY_PREFIX}/include",
         "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
         "BUILD_SHARED_LIBS": "ON",
         "BUILD_STATIC_LIBS": "OFF",
@@ -237,8 +241,7 @@
         "ZLIB_DIR": {
           "type": "PATH",
           "value": "$env{LIBRARY_PREFIX}"
-        },
-        "CMAKE_INCLUDE_PATH": "$env{LIBRARY_PREFIX}/include"
+        }
       }
     },
     {
@@ -255,7 +258,8 @@
         "conda-shared"
       ],
       "cacheVariables": {
-        "CMAKE_VERBOSE_MAKEFILE": "ON"
+        "CMAKE_VERBOSE_MAKEFILE": "OFF",
+        "CMAKE_C_FLAGS": "/W0"
       }
     },
     {

@@ -26,6 +26,7 @@ clangxx = "*"
 [feature.flang.tasks]
 build = { cmd = ["cmake", "-DCMAKE_BUILD_TYPE=Release", "--preset", "msvc-flang", "-B", "build/msvc-flang", "--fresh"], description = "Build the project" }
 install = { cmd = ["ninja", "-C", "build/msvc-flang", "install"], description = "Install the project" }
+test_flang = { cmd = ["flang_checks/run.bat"], description = "Run the tests", env={CMAKE_LINKER_FLAGS="-defaultlib:$CONDA_PREFIX/Library/lib/clang/19/lib/windows/clang_rt.builtins-x86_64.lib"} }
 
 [feature.ifx.tasks]
 build_intel = { cmd = ["cmake", "-DCMAKE_BUILD_TYPE=Release", "--preset", "msvc-ifx", "-B", "build/msvc-ifx", "--fresh"], description = "Build the project", env = { ACTIVATE_INTEL = "1" } }
