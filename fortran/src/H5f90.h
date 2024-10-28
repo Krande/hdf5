@@ -25,5 +25,7 @@
 #define OBJECT_NAMELEN_DEFAULT_F -1
 
 #define H5_MAX(a, b) (((a) > (b)) ? (a) : (b))
-
+#ifndef real_C_LONG_DOUBLE_f
+#define real_C_LONG_DOUBLE_f long double
+#endif
 #endif /* H5f90_H */
