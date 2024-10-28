@@ -162,9 +162,13 @@ FORTRAN_RUN ("REAL and INTEGER KINDs"
 # dnl    -- LINE 6 --  number of valid logical kinds
 # dnl    -- LINE 7 --  valid logical kinds (comma separated list)
 
-#
-# Convert the string to a list of strings by replacing the carriage return with a semicolon
-string (REGEX REPLACE "[\r\n]+" ";" PROG_OUTPUT "${PROG_OUTPUT}")
+if (CMAKE_Fortran_COMPILER MATCHES "flang")
+    message(STATUS PROG_OUTPUT=${PROG_OUTPUT}. Force override with "1,2,4,8;4,8,16;33;4;3;4;1,2,4,8;")
+    set(PROG_OUTPUT "1,2,4,8;4,8,16;33;4;3;4;1,2,4,8;")
+else ()
+    # Convert the string to a list of strings by replacing the carriage return with a semicolon
+    string (REGEX REPLACE "[\r\n]+" ";" PROG_OUTPUT "${PROG_OUTPUT}")
+endif ()
 
 list (GET PROG_OUTPUT 0 pac_validIntKinds)
 list (GET PROG_OUTPUT 1 pac_validRealKinds)

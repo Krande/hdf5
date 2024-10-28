@@ -101,7 +101,12 @@ target_include_directories (H5_buildiface PRIVATE "${HDF5_SRC_BINARY_DIR};${HDF5
 #  target_compile_definitions(H5_buildiface PRIVATE "$<$<STREQUAL:x${CMAKE_Fortran_SIMULATE_ID},xMSVC>:/MT>")
 #endif ()
 if(MSVC)
-  set_property(TARGET H5_buildiface PROPERTY COMPILE_FLAGS "/MT")
+  if (CMAKE_Fortran_COMPILER MATCHES "flang")
+
+  else ()
+    set_property(TARGET H5_buildiface PROPERTY COMPILE_FLAGS "/MT")
+  endif ()
+
 endif()
 #set_property(TARGET H5_buildiface APPEND PROPERTY LINK_FLAGS "$<$<STREQUAL:x${CMAKE_Fortran_SIMULATE_ID},xMSVC>:-SUBSYSTEM:CONSOLE>")
 if(MSVC)

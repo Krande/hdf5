@@ -19,7 +19,11 @@ add_executable (H5HL_buildiface ${HDF5_HL_F90_SRC_SOURCE_DIR}/H5HL_buildiface.F9
 target_include_directories (H5HL_buildiface PRIVATE "${HDF5_SRC_BINARY_DIR};${HDF5_F90_BINARY_DIR}")
 if (WIN32 AND MSVC)
   if (BUILD_SHARED_LIBS)
-    set_target_properties (H5HL_buildiface PROPERTIES COMPILE_FLAGS "/MT")
+    if (CMAKE_Fortran_COMPILER MATCHES "flang")
+
+    else ()
+      set_target_properties (H5HL_buildiface PROPERTIES COMPILE_FLAGS "/MT")
+    endif ()
   endif ()
 endif ()
 if(MSVC)
