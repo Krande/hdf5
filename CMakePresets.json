@@ -204,6 +204,73 @@
         "ci-Java",
         "ci-StdShar"
       ]
+    },
+    {
+      "name": "conda-shared",
+      "description": "Conda shared libraries",
+      "hidden": true,
+      "environment": {
+        "ZLIB_INCLUDE_DIR": "$env{LIBRARY_PREFIX}/include",
+        "ZLIB_DIR": "$env{LIBRARY_PREFIX}"
+      },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
+        "CMAKE_POSITION_INDEPENDENT_CODE": "ON",
+        "BUILD_SHARED_LIBS": "ON",
+        "BUILD_STATIC_LIBS": "OFF",
+        "ONLY_SHARED_LIBS": "ON",
+        "HDF5_BUILD_TOOLS": "ON",
+        "HDF5_BUILD_HL_LIB": "ON",
+        "HDF5_BUILD_CPP_LIB": "ON",
+        "HDF5_BUILD_FORTRAN": "ON",
+        "ALLOW_UNSUPPORTED": "ON",
+        "HDF5_ENABLE_THREADSAFE": "ON",
+        "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
+        "BUILD_TESTING": "OFF",
+        "HDF5_BUILD_EXAMPLES": "OFF",
+        "ZLIB_USE_EXTERNAL": "OFF",
+        "ZLIB_INCLUDE_DIR": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}/include"
+        },
+        "ZLIB_DIR": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}"
+        },
+        "CMAKE_INCLUDE_PATH": "$env{LIBRARY_PREFIX}/include"
+      }
+    },
+    {
+      "name": "msvc-flang",
+      "description": "MSVC with Flang",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${sourceDir}/config/toolchain/msvc-flang.cmake",
+      "environment": {
+        "PREFIX": "${sourceDir}/.pixi/envs/flang",
+        "LIBRARY_PREFIX": "${sourceDir}/.pixi/envs/flang/Library"
+      },
+      "inherits": [
+        "conda-shared"
+      ],
+      "cacheVariables": {
+        "CMAKE_VERBOSE_MAKEFILE": "ON"
+      }
+    },
+    {
+      "name": "msvc-ifx",
+      "description": "MSVC with Intel Fortran",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "environment": {
+        "PREFIX": "${sourceDir}/.pixi/envs/ifx",
+        "LIBRARY_PREFIX": "${sourceDir}/.pixi/envs/ifx/Library"
+      },
+      "inherits": [
+        "conda-shared"
+      ],
+      "toolchainFile": "${sourceDir}/config/toolchain/msvc-ifx.cmake"
     }
   ],
   "buildPresets": [
