@@ -231,8 +231,9 @@
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
         "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
-        "BUILD_TESTING": "OFF",
+        "BUILD_TESTING": "ON",
         "HDF5_BUILD_EXAMPLES": "OFF",
+        "H5_BUILT_AS_DYNAMIC_LIB": "ON",
         "ZLIB_USE_EXTERNAL": "OFF",
         "ZLIB_INCLUDE_DIR": {
           "type": "PATH",
@@ -242,6 +243,22 @@
           "type": "PATH",
           "value": "$env{LIBRARY_PREFIX}"
         }
+      }
+    },
+    {
+      "name": "msvc-m2w64",
+      "description": "MSVC with MinGW-w64",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "environment": {
+        "PREFIX": "${sourceDir}/.pixi/envs/m2w64",
+        "LIBRARY_PREFIX": "${sourceDir}/.pixi/envs/m2w64/Library"
+      },
+      "inherits": [
+        "conda-shared"
+      ],
+      "cacheVariables": {
+        "CMAKE_VERBOSE_MAKEFILE": "OFF"
       }
     },
     {
