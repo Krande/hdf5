@@ -735,7 +735,7 @@ H5FD__ros3_open(const char *url, unsigned flags, hid_t fapl_id, haddr_t maxaddr)
      * authenticate requests or not.
      */
     if (fa->authenticate == true) {
-        /* Compute signing key (part of AWS/S3 REST API). Can be re-used by
+        /* Compute signing key (part of AWS/S3 REST API). Can be reused by
          * user/key for 7 days after creation.
          *
          * TODO: Find way to reuse/share?
