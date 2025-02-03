@@ -126,6 +126,9 @@ Bug Fixes since HDF5-1.14.5 release
       The change has been reverted for this release and will be addressed in a
       different manner in a future release.
 
+      If you are using 1.14.4 or 1.14.5 and are happy with how UTF-8 file names
+      are handled in those versions, do not update to 1.14.6.
+
       Reverted commit: eb0351efffe987a9c1882ccc9b03b5b0aec7f2dd
 
 
@@ -137,11 +140,14 @@ Bug Fixes since HDF5-1.14.5 release
     Configuration
     -------------
     - When using a system installed zlib library, the shared library is expected to
-      be found in the system library path.
+      be found in the system library path with the default HDF5_MODULE_MODE_ZLIB 
+      setting ON.
 
       Setting the HDF5_MODULE_MODE_ZLIB option to OFF, the system installed zlib,
       or an alternate installed zlib library, is expected to have a correct
       zlib-config.cmake file.
+
+      Fixes #5155
 
     - Use pre-installed libaec compression library
 
@@ -151,20 +157,21 @@ Bug Fixes since HDF5-1.14.5 release
           HDF5_ALLOW_EXTERNAL_SUPPORT:STRING=NO
           <LIB_PKG_NAME>_USE_EXTERNAL:BOOL=OFF
       where <LIB_PKG_NAME> is one of ZLIB, ZLIBNG, SZIP, PLUGIN.
-      Note that HDF5_ALLOW_EXTERNAL_SUPPORT:STRING=NO disables building all plugins
-      and external libraries in-line with the HDF5 library.
+      Note that HDF5_ALLOW_EXTERNAL_SUPPORT:STRING=NO disables building all
+      plugins and external libraries in-line with the HDF5 library.
 
       In addition, the <LIB_PKG_NAME>_ROOT environment variables must be set,
       where <LIB_PKG_NAME> is one of ZLIB, ZLIBNG, SZIP, libaec, PLUGIN.
-      Note that libaec is the expected name for using the libaec library in place of original szip.
+      Note that libaec is the expected name for using the libaec library in
+      place of original szip.
 
       See INSTALL_CMake.txt for more detailed information.
 
     - Removed the module search find_package for szip library
     
-      There is not a szip module file to use, so the find_package only uses
-      find_package in config mode. The choice then is to either build szip, with libaec,
-      inline or find a system installed szip library, built with CMake.
+      There is not an szip module file to use, so the find_package only uses
+      find_package in config mode. The remaining choices are to either build szip 
+      with libaec inline, or find a system installed szip library built with CMake.
 
 
     Tools
@@ -215,11 +222,14 @@ Bug Fixes since HDF5-1.14.5 release
 Platforms Tested
 ===================
 
-    - HDF5 is tested with the two latest macOS versions that are available
-      on github runners. As new major macOS versions become available, HDF5
-      will discontinue support for the older version and add the new latest
-      version to its list of compatible systems, along with the previous
-      version.
+    - HDF5 is tested with the latest Linux, macOS and Windows versions that are
+      available on GitHub runners, with Clang, GCC and Intel compilers. As new
+      major versions become available, HDF5 will discontinue testing the older
+      version and add the new latest version to its list of compatible systems,
+      along with the previous version.  HDF5 is also tested on the HPC systems
+      and older versions listed below.  Test results may be viewed at the
+      "test results" link on the top level README page.  
+        
 
     Linux 6.8.0-1010-aws             GNU gcc, gfortran, g++
     #10-Ubuntu SMP 2024 x86_64       (Ubuntu 13.2.0-23ubuntu4) 13.2.0
@@ -236,28 +246,15 @@ Platforms Tested
                                      (cmake and autotools)
 
     Linux 5.14.21-cray_shasta_c      cray-mpich/8.1.28
-    #1 SMP x86_64 GNU/Linux              cce/15.0.0
+    #1 SMP x86_64 GNU/Linux              cce 18.0.1 17.0.1
     (frontier)                           gcc/13.2
                                      (cmake)
 
-    Linux 5.14.0-427.24.1.el9_4      GNU gcc, gfortran, g++ (Red Hat 11.4.1-3)
-    #1 SMP x86_64 GNU/Linux          clang version 17.0.6
-    Rocky 9                          Intel(R) oneAPI DPC++/C++ Compiler 2024.2.0
-                                     ifx (IFX) 2024.2.0 
-                                     (cmake and autotools)
-
-    Linux-4.18.0-553.16.1.1toss.t4   openmpi/4.1.2
+    Linux-4.18.0-553.27.1.1toss.t4   openmpi/4.1.2
     #1 SMP x86_64 GNU/Linux              clang 14.0.6
     (corona, dane)                       GCC 12.1.1
                                          Intel(R) oneAPI DPC++/C++ Compiler 2023.2.1
                                          ifx (IFX) 2023.2.1
-
-    Linux-4.18.0-553.5.1.1toss.t4    openmpi/4.1/4.1.6
-    #1 SMP x86_64 GNU/Linux              clang 16.0.6
-    (eclipse)                            GCC 12.3.0
-                                         Intel(R) oneAPI DPC++/C++ Compiler 2024.0.2
-                                         ifx (IFX) 2024.0.2
-                                     (cmake)
 
     Linux 4.14.0-115.35.1.3chaos     spectrum-mpi/rolling-release
     #1 SMP ppc64le GNU/Linux             clang 17.0.6
@@ -267,59 +264,10 @@ Platforms Tested
                                      (cmake)
 
     Linux-4.14.0-115.35.1            spectrum-mpi/rolling-release
-    #1 SMP ppc64le GNU/Linux             clang 14.0.5, 15.0.6
-    (lassen)                             GCC 8.3.1
-                                         XL 2021.09.22, 2022.08.05
+    #1 SMP ppc64le GNU/Linux             clang 17.0.6, 18.1.8
+    (lassen)                             GCC 12.2.1
+                                         XL 2023.06.28, 2022.08.19
                                      (cmake)
-
-    Linux 3.10.0-1160.36.2.el7.ppc64 gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39)
-    #1 SMP ppc64be GNU/Linux         g++ (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39)
-    Power8 (echidna)                 GNU Fortran (GCC) 4.8.5 20150623 (Red Hat 4.8.5-39)
-
-    Linux 3.10.0-1160.80.1.el7       GNU C (gcc), Fortran (gfortran), C++ (g++)
-    #1 SMP x86_64 GNU/Linux          compilers:
-    Centos7                              Version 4.8.5 20150623 (Red Hat 4.8.5-4)
-    (jelly/kituo/moohan)                 Version 4.9.3, Version 7.2.0, Version 8.3.0,
-                                         Version 9.1.0, Version 10.2.0
-                                     Intel(R) C (icc), C++ (icpc), Fortran (icc)
-                                     compilers:
-                                         Version 17.0.0.098 Build 20160721
-                                     GNU C (gcc) and C++ (g++) 4.8.5 compilers
-                                         with NAG Fortran Compiler Release 7.1(Hanzomon)
-                                     Intel(R) C (icc) and C++ (icpc) 17.0.0.098 compilers
-                                         with NAG Fortran Compiler Release 7.1(Hanzomon)
-                                     MPICH 3.1.4 compiled with GCC 4.9.3
-                                     MPICH 3.3 compiled with GCC 7.2.0
-                                     OpenMPI 3.1.3 compiled with GCC 7.2.0 and 4.1.2
-                                         compiled with GCC 9.1.0
-                                     PGI C, Fortran, C++ for 64-bit target on
-                                     x86_64;
-                                         Versions 18.4.0 and 19.10-0
-                                     NVIDIA nvc, nvfortran and nvc++ version 22.5-0
-                                     (autotools and cmake)
-
-
-    Linux-3.10.0-1160.119.1.1chaos   openmpi/4.1.4
-    #1 SMP x86_64 GNU/Linux              clang 16.0.6
-    (skybridge)                          Intel(R) oneAPI DPC++/C++ Compiler 2023.2.0
-                                         ifx (IFX) 2023.2.0
-                                     (cmake)
-
-    Linux-3.10.0-1160.90.1.1chaos    openmpi/4.1
-    #1 SMP x86_64 GNU/Linux              clang 16.0.6
-    (attaway)                            GCC 12.1.0
-                                         Intel(R) oneAPI DPC++/C++ Compiler 2024.0.2
-                                         ifx (IFX) 2024.0.2
-                                     (cmake)
-
-    Linux 2.6.32-573.22.1.el6        GNU C (gcc), Fortran (gfortran), C++ (g++)
-    #1 SMP x86_64 GNU/Linux          compilers:
-    Centos6                              Version 4.4.7 20120313
-    (platypus)                           Version 4.9.3, 5.3.0, 6.2.0
-                                     MPICH 3.1.4 compiled with GCC 4.9.3
-                                     PGI C, Fortran, C++ for 64-bit target on
-                                     x86_64;
-                                         Version 19.10-0
 
     Windows 10 x64                  Visual Studio 2019 w/ clang 12.0.0
                                         with MSVC-like command-line (C/C++ only - cmake)
@@ -332,6 +280,14 @@ Platforms Tested
 
 Known Problems
 ==============
+
+ -  HDF5 compiled with Cray/CCE 18.0.1 fails these Fortran tests:
+        FORTRAN_fortranlib_test_F03
+        FORTRAN_testhdf5_fortran_1_8
+        HL_FORTRAN_f90_tstlite
+        MPI_TEST_FORT_async_test
+
+    See https://github.com/HDFGroup/hdf5/issues/5283
 
  -  When building with the NAG Fortran compiler using the Autotools and libtool
     2.4.2 or earlier, the -shared flag will be missing '-Wl,', which will cause
@@ -397,11 +353,6 @@ Known Problems
 
  -  Several tests currently fail on certain platforms:
         MPI_TEST-t_bigio fails with spectrum-mpi on ppc64le platforms.
-
-        MPI_TEST-t_subfiling_vfd and MPI_TEST_EXAMPLES-ph5_subfiling fail with
-        cray-mpich on theta and with XL compilers on ppc64le platforms.
-
-        MPI_TEST_testphdf5_tldsc fails with cray-mpich 7.7 on cori and theta.
 
  -  File space may not be released when overwriting or deleting certain nested
     variable length or reference types.
