@@ -45,3 +45,9 @@ src/H5version.h
 /.classpath
 /CMakeUserPresets.json
 HDF5Examples/CMakeUserPresets.json
+
+.pixi/
+.vs/
+.idea/
+*.obj
+*.exe
