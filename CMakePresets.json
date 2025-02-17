@@ -227,6 +227,7 @@
         "HDF5_BUILD_TOOLS": "ON",
         "HDF5_BUILD_HL_LIB": "ON",
         "HDF5_BUILD_CPP_LIB": "ON",
+        "CMAKE_KEEP_GENERATED_FILES": "ON",
         "HDF5_BUILD_FORTRAN": "ON",
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
@@ -294,8 +295,7 @@
         "conda-shared"
       ],
       "cacheVariables": {
-        "CMAKE_VERBOSE_MAKEFILE": "OFF",
-        "CMAKE_C_FLAGS": "/W0"
+        "CMAKE_VERBOSE_MAKEFILE": "OFF"
       }
     },
     {
