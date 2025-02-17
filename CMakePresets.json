@@ -231,10 +231,26 @@
         "ALLOW_UNSUPPORTED": "ON",
         "HDF5_ENABLE_THREADSAFE": "ON",
         "HDF5_ENABLE_Z_LIB_SUPPORT": "ON",
+        "HDF5_BUILD_HL_GIF_TOOLS": "OFF",
         "BUILD_TESTING": "ON",
         "HDF5_BUILD_EXAMPLES": "OFF",
         "H5_BUILT_AS_DYNAMIC_LIB": "ON",
-        "ZLIB_USE_EXTERNAL": "OFF",
+        "SZIP_INCLUDE_DIR": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}/include"
+        },
+        "SZIP_LIBRARY": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}/lib/szip.lib"
+        },
+        "LIBAEC_DIR": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}"
+        },
+        "ZLIB_ROOT": {
+          "type": "PATH",
+          "value": "$env{LIBRARY_PREFIX}"
+        },
         "ZLIB_INCLUDE_DIR": {
           "type": "PATH",
           "value": "$env{LIBRARY_PREFIX}/include"
@@ -258,7 +274,10 @@
         "conda-shared"
       ],
       "cacheVariables": {
-        "CMAKE_VERBOSE_MAKEFILE": "OFF"
+        "CMAKE_VERBOSE_MAKEFILE": "OFF",
+        "CMAKE_PREFIX_PATH": "$env{PREFIX};$env{LIBRARY_PREFIX};$env{LIBRARY_PREFIX}/include;$env{LIBRARY_PREFIX}/lib;$env{LIBRARY_PREFIX}/bin",
+        "CMAKE_INCLUDE_PATH": "$env{LIBRARY_PREFIX}/include",
+        "CMAKE_FIND_DEBUG_MODE": "ON"
       }
     },
     {
